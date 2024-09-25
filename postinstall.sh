@@ -152,11 +152,9 @@ configure_de() {
     # sudo fly-admin-dm
 
     sudo kwriteconfig5 --file /etc/X11/fly-dm/fly-dmrc --group "X-*-Greeter" --key NumLock On
-
     sudo kwriteconfig5 --file /etc/X11/fly-dm/fly-modern/settings.ini --group "background" --key path ""
     sudo kwriteconfig5 --file /etc/X11/fly-dm/fly-modern/settings.ini --group "background" --group "logo" --key path ""
     sudo kwriteconfig5 --file /etc/X11/fly-dm/fly-modern/settings.ini --group "background" --group "logo" --key enable false
-
     sudo kwriteconfig5 --file /etc/X11/fly-dm/fly-dmrc --group "X-*-Core" --key DefaultUser "$USER"
     sudo kwriteconfig5 --file /etc/X11/fly-dm/fly-dmrc --group "X-*-Core" --key FocusPasswd true
     sudo kwriteconfig5 --file /etc/X11/fly-dm/fly-dmrc --group "X-*-Core" --key PreselectUser Default
@@ -172,7 +170,7 @@ configure_de() {
 
     # zenity --info --width=420 --title="AstraLinux 1.8 PostInstall" --text="Автоматизировать часть настроек нет возожности, требуется ваше вмешательство!\n\nПеред вами открылся 'Загрузчик GRUB 2'\nАктивируйте следующие пункты:\n- Вкладка 'Основное':\n  В 'Автоматическая загрузка' выберите 'Немедлено' под галкой 'Автоматически загружать запись по умолчанию'\n\nНажмите 'Да'" &
     # sudo fly-admin-grub2
-    sudo kwriteconfig5 --file /etc/default/grub --group '<default>' --key GRUB_TIMEOUT 5
+    sudo kwriteconfig5 --file /etc/default/grub --group '<default>' --key GRUB_TIMEOUT 0
 }
 
 cds_setup() {
