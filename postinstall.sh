@@ -125,6 +125,14 @@ configure_de() {
     sudo fly-wmfunc FLYWM_UPDATE_VAL LockerOnSwitch false
     sudo fly-wmfunc FLYWM_UPDATE_VAL ScreenSaverDelay 0
 
+    #kwriteconfig5 --file ~/.config/powermanagementprofilesrc --group "AC" --group "DPMSContol" --key dimScreen false
+    #kwriteconfig5 --file ~/.config/powermanagementprofilesrc --group "AC" --group "DPMSContol" --key dimTime 0
+    kwriteconfig5 --file ~/.config/powermanagementprofilesrc --group "AC" --group "DPMSContol" --key idleTime 0
+    kwriteconfig5 --file ~/.config/powermanagementprofilesrc --group "AC" --group "DimDisplay" --key idleTime 0
+    kwriteconfig5 --file ~/.config/powermanagementprofilesrc --group "AC" --group "HandleButtonEvents" --key lidAction 0
+    kwriteconfig5 --file ~/.config/powermanagementprofilesrc --group "AC" --group "HandleButtonEvents" --key triggerLidActionWhenExternalMonitorPresent true
+    qdbus org.kde.Solid.PowerManagement /org/kde/Solid/PowerManagement org.kde.Solid.PowerManagement.refreshStatus
+
     sudo fly-wmfunc FLYWM_UPDATE_VAL CtrlMenuFont "Inter Display-9:normal"
     sudo fly-wmfunc FLYWM_UPDATE_VAL DefaultFont "Inter Display-10:normal"
     sudo fly-wmfunc FLYWM_UPDATE_VAL DialogFont "Inter Display-10:normal"
