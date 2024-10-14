@@ -1,5 +1,5 @@
 #!/bin/bash
-#title              : AstraLinux 1.8 PostInstall
+#title              : AstraLinux 1.8 PostInstall (CDS)
 #description        : Automation script after setup
 #author             : xenongee
 #date               : 09.2024
@@ -7,7 +7,7 @@
 
 set_time() {
     sudo timedatectl set-timezone Europe/Kirov
-    sudo ntpdig -S 0.ru.pool.ntp.org
+    sudo ntpdig -S ntp1.vniiftri.ru
 }
 
 enable_repos() {
