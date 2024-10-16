@@ -193,6 +193,14 @@ auto() {
     echo "> Configure DE"
     configure_de
     logout
+    touch "$FLAG_FILE"
 }
+
+mkdir -p "$USER/.config"
+FLAG_FILE="$HOME/.config/.postinstall_done"
+
+if [ -f "$FLAG_FILE" ]; then
+    exit 0
+fi  
 
 auto
