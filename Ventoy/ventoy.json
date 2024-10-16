@@ -1,0 +1,17 @@
+{
+    "auto_install":[
+        {
+            "image": "/ISO/Astra_Linux-1.8.1.6-27.06.2024_14.12-di.iso",
+            "template":[
+                "/Ventoy/astra_preseed.cfg"
+            ]
+        }
+    ],
+    "conf_replace":[
+        {
+            "iso": "/ISO/Astra_Linux-1.8.1.6-27.06.2024_14.12-di.iso",
+            "org": "/boot/grub/grub.cfg",
+            "new": "/Ventoy/astra_grub.cfg"
+        }
+    ]
+}
