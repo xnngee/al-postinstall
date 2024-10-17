@@ -102,11 +102,11 @@ EOF
     sudo gsettings set org.gnome.Vino notify-on-connect false
     sudo gsettings set org.gnome.Vino icon-visibility never
     /usr/lib/vino/vino-server &
-
-    sudo curl https://aviakat.ru/images/avi_optimized.jpg --output /usr/share/wallpapers/avi.jpg
 }
 
 configure_de() {
+    sudo curl https://aviakat.ru/images/avi_optimized.jpg --output /usr/share/wallpapers/avi.jpg
+    
     # sudo fly-admin-dm
     sudo kwriteconfig5 --file /etc/X11/fly-dm/fly-dmrc --group "X-*-Greeter" --key NumLock On
     sudo kwriteconfig5 --file /etc/X11/fly-dm/fly-modern/settings.ini --group "background" --key path "/usr/share/wallpapers/avi.jpg"
