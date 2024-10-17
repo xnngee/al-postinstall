@@ -180,7 +180,7 @@ configure_de() {
 }
 
 logout() {
-    sudo fly-wmfunc FLYWM_LOGOUT
+    sleep 5 && sudo fly-wmfunc FLYWM_LOGOUT
 }
 
 auto() {
