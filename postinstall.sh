@@ -2,8 +2,11 @@
 #title              : AstraLinux 1.8 PostInstall
 #description        : Automation script after setup
 #author             : xenongee
-#date               : 09.2024
+#date               : 10.2024
 #==============================================================================
+
+mkdir -p "$USER/.config"
+FLAG_FILE="$HOME/.config/.postinstall_done"
 
 enable_repos() {
 sudo tee /etc/apt/sources.list &>/dev/null <<EOF
@@ -18,8 +21,8 @@ EOF
 }
 
 manage_apps() {
-    # sudo apt remove -y fly-scan fly-admin-iso fly-jobviewer fly-admin-usbip fly-admin-multiseat k3b recoll guvcview
-    sudo apt install -y fish zenity fly-dm-rdp xrdp vino fonts-inter
+    sudo apt remove -y fly-admin-iso fly-admin-usbip fly-admin-format fly-admin-multiseat k3b recoll guvcview
+    sudo apt install -y fish zenity fly-dm-rdp xrdp vino fonts-inter astra-ad-sssd-client
     sudo apt autoremove -y
 }
 
@@ -63,10 +66,10 @@ if status is-interactive
         # https://stackoverflow.com/questions/34188178/how-to-extract-substring-in-fish-shell
         # set memsplitused (string split "-" -- \$mem)[1]
         # set memsplittotal (string split "-" -- \$mem)[2]
-		set usedmem "\$(math -s 1 \$(math \$mem) / 1024 / 1024)"
-		set totalmem "\$(math -s 1 \$memsplit[1] / 1024 / 1024)"
+        set usedmem "\$(math -s 1 \$(math \$mem) / 1024 / 1024)"
+        set totalmem "\$(math -s 1 \$memsplit[1] / 1024 / 1024)"
         echo "\$(set_color yellow)RAM:\$(set_color normal)        \$usedmem MiB / \$totalmem MiB"
-		echo "\$(set_color yellow)IP:\$(set_color normal)         \$(hostname -I)'('\$(curl -s 2ip.io)')'"
+        echo "\$(set_color yellow)IP:\$(set_color normal)         \$(hostname -I)'('\$(curl -s 2ip.io)')'"
         echo "Enter 'fishhelp' or 'fh' for more info"
     end
 
@@ -91,15 +94,15 @@ if status is-interactive
     alias fh="fishhelp"
 end
 EOF
-	sudo chsh -s /usr/bin/fish
+    sudo chsh -s /usr/bin/fish
 
-	sudo timedatectl set-ntp true
-	sudo systemctl start systemd-timesyncd
+    sudo timedatectl set-ntp true
+    sudo systemctl start systemd-timesyncd
 
     #/usr/libexec/vino-server
-	gsettings set org.gnome.Vino notify-on-connect false
-	gsettings set org.gnome.Vino icon-visibility never
-	/usr/lib/vino/vino-server &
+    gsettings set org.gnome.Vino notify-on-connect false
+    gsettings set org.gnome.Vino icon-visibility never
+    /usr/lib/vino/vino-server &
 }
 
 configure_de() {
@@ -112,7 +115,7 @@ configure_de() {
 
     sudo fly-wmfunc FLYWM_UPDATE_VAL TaskbarHeight 38
     sudo fly-wmfunc FLYWM_UPDATE_VAL WallPaper "/usr/share/wallpapers/avi.jpg"
-    sudo fly-wmfunc FLYWM_UPDATE_VAL LogoPixmap ""
+    sudo fly-wmfunc FLYWM_UPDATE_VAL LogoPixmap "/usr/share/wallpapers/_astra_logo_light.svg"
 
     sudo fly-wmfunc FLYWM_UPDATE_VAL LockerOnDPMS false
     sudo fly-wmfunc FLYWM_UPDATE_VAL LockerOnLid false
@@ -120,8 +123,6 @@ configure_de() {
     sudo fly-wmfunc FLYWM_UPDATE_VAL LockerOnSwitch false
     sudo fly-wmfunc FLYWM_UPDATE_VAL ScreenSaverDelay 0
 
-    #kwriteconfig5 --file ~/.config/powermanagementprofilesrc --group "AC" --group "DPMSContol" --key dimScreen false
-    #kwriteconfig5 --file ~/.config/powermanagementprofilesrc --group "AC" --group "DPMSContol" --key dimTime 0
     kwriteconfig5 --file ~/.config/powermanagementprofilesrc --group "AC" --group "DPMSContol" --key idleTime 0
     kwriteconfig5 --file ~/.config/powermanagementprofilesrc --group "AC" --group "DimDisplay" --key idleTime 0
     kwriteconfig5 --file ~/.config/powermanagementprofilesrc --group "AC" --group "HandleButtonEvents" --key lidAction 0
@@ -151,27 +152,25 @@ configure_de() {
     sudo fly-wmfunc FLYWM_UPDATE_VAL LockerWelcomeFont "Inter Display-14:normal"
     sudo fly-wmfunc FLYWM_NUMLOCK_ON
 
-    # zenity --info --width=420 --title="AstraLinux 1.8 PostInstall" --text="Автоматизировать часть настроек нет возожности, требуется ваше вмешательство!\n\nПеред вами открылись 'Параметры системы' со страницей 'Вход в систему' (Настройка графического входа)\nАктивируйте следующие пункты:\n- Вкладка 'Основное':\n  Состояние NumLock\n- Вкладка 'Тема':\n  Очистить строки в 'Выбрать обои' и 'Логотип' (его отключите)\n- Вкладка 'Дополнительно' (опционально):\n   Включите 'Разрешить автоматический вход в систему'\n  Выберите пользователя\n  Укажите пользователя в 'Автоматически выбирать пользователя'\n  Включите 'Переместить фокус на поле ввода пароля'\nНажмите 'Применить' и закройте окно" &
     # sudo fly-admin-dm
-
     sudo kwriteconfig5 --file /etc/X11/fly-dm/fly-dmrc --group "X-*-Greeter" --key NumLock On
-    sudo kwriteconfig5 --file /etc/X11/fly-dm/fly-modern/settings.ini --group "background" --key path ""
+    sudo kwriteconfig5 --file /etc/X11/fly-dm/fly-modern/settings.ini --group "background" --key path "/usr/share/wallpapers/avi.jpg"
+    sudo kwriteconfig5 --file /etc/X11/fly-dm/fly-modern/settings.ini --group "background" --group "blur" --key radius "5"
     sudo kwriteconfig5 --file /etc/X11/fly-dm/fly-modern/settings.ini --group "background" --group "logo" --key path ""
     sudo kwriteconfig5 --file /etc/X11/fly-dm/fly-modern/settings.ini --group "background" --group "logo" --key enable false
-    sudo kwriteconfig5 --file /etc/X11/fly-dm/fly-dmrc --group "X-*-Core" --key DefaultUser "$USER"
-    sudo kwriteconfig5 --file /etc/X11/fly-dm/fly-dmrc --group "X-*-Core" --key FocusPasswd true
-    sudo kwriteconfig5 --file /etc/X11/fly-dm/fly-dmrc --group "X-*-Core" --key PreselectUser Default
-    sudo kwriteconfig5 --file /etc/X11/fly-dm/fly-dmrc --group "X-*-Greeter" --key DefaultUser "$USER"
-    sudo kwriteconfig5 --file /etc/X11/fly-dm/fly-dmrc --group "X-*-Greeter" --key FocusPasswd true
-    sudo kwriteconfig5 --file /etc/X11/fly-dm/fly-dmrc --group "X-*-Greeter" --key PreselectUser Default
-    sudo kwriteconfig5 --file /etc/X11/fly-dm/fly-dmrc --group "X-:*-Greeter" --key FocusPasswd true
-    sudo kwriteconfig5 --file /etc/X11/fly-dm/fly-dmrc --group "X-:0-Core" --key AutoLoginEnable true
-    sudo kwriteconfig5 --file /etc/X11/fly-dm/fly-dmrc --group "X-:0-Core" --key AutoLoginUser "$USER"
-    sudo kwriteconfig5 --file /etc/X11/fly-dm/fly-dmrc --group "X-:0-Greeter" --key DefaultUser "$USER"
-    sudo kwriteconfig5 --file /etc/X11/fly-dm/fly-dmrc --group "X-:0-Greeter" --key FocusPasswd true
-    sudo kwriteconfig5 --file /etc/X11/fly-dm/fly-dmrc --group "X-:0-Greeter" --key PreselectUser Default
-
-    # zenity --info --width=420 --title="AstraLinux 1.8 PostInstall" --text="Автоматизировать часть настроек нет возожности, требуется ваше вмешательство!\n\nПеред вами открылся 'Загрузчик GRUB 2'\nАктивируйте следующие пункты:\n- Вкладка 'Основное':\n  В 'Автоматическая загрузка' выберите 'Немедлено' под галкой 'Автоматически загружать запись по умолчанию'\n\nНажмите 'Да'" &
+    # sudo kwriteconfig5 --file /etc/X11/fly-dm/fly-dmrc --group "X-*-Core" --key DefaultUser "$USER"
+    # sudo kwriteconfig5 --file /etc/X11/fly-dm/fly-dmrc --group "X-*-Core" --key FocusPasswd true
+    # sudo kwriteconfig5 --file /etc/X11/fly-dm/fly-dmrc --group "X-*-Core" --key PreselectUser Default
+    # sudo kwriteconfig5 --file /etc/X11/fly-dm/fly-dmrc --group "X-*-Greeter" --key DefaultUser "$USER"
+    # sudo kwriteconfig5 --file /etc/X11/fly-dm/fly-dmrc --group "X-*-Greeter" --key FocusPasswd true
+    # sudo kwriteconfig5 --file /etc/X11/fly-dm/fly-dmrc --group "X-*-Greeter" --key PreselectUser Default
+    # sudo kwriteconfig5 --file /etc/X11/fly-dm/fly-dmrc --group "X-:*-Greeter" --key FocusPasswd true
+    # sudo kwriteconfig5 --file /etc/X11/fly-dm/fly-dmrc --group "X-:0-Core" --key AutoLoginEnable true
+    # sudo kwriteconfig5 --file /etc/X11/fly-dm/fly-dmrc --group "X-:0-Core" --key AutoLoginUser "$USER"
+    # sudo kwriteconfig5 --file /etc/X11/fly-dm/fly-dmrc --group "X-:0-Greeter" --key DefaultUser "$USER"
+    # sudo kwriteconfig5 --file /etc/X11/fly-dm/fly-dmrc --group "X-:0-Greeter" --key FocusPasswd true
+    # sudo kwriteconfig5 --file /etc/X11/fly-dm/fly-dmrc --group "X-:0-Greeter" --key PreselectUser Default
+    
     # sudo fly-admin-grub2
     sudo kwriteconfig5 --file /etc/default/grub --group '<default>' --key GRUB_TIMEOUT 0
 }
@@ -181,8 +180,12 @@ logout() {
 }
 
 auto() {
+    if [ -f "$FLAG_FILE" ]; then
+        exit 0
+    fi
     echo ""
     echo "> AstraLinux 1.8 PostInstall"
+    echo "> Enter admin password for running this script."
     echo ""
     echo "> Enable Repos"
     enable_repos
@@ -194,13 +197,7 @@ auto() {
     configure_de
     logout
     touch "$FLAG_FILE"
-}
-
-mkdir -p "$USER/.config"
-FLAG_FILE="$HOME/.config/.postinstall_done"
-
-if [ -f "$FLAG_FILE" ]; then
-    exit 0
-fi  
+    rm -rf "$HOME/.config/autostart/postinstall.desktop"
+}  
 
 auto
