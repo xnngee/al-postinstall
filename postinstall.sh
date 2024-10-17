@@ -5,7 +5,7 @@
 #date               : 10.2024
 #==============================================================================
 
-mkdir -p "$USER/.config"
+mkdir -p "$HOME/.config"
 FLAG_FILE="$HOME/.config/.postinstall_done"
 
 enable_repos() {
