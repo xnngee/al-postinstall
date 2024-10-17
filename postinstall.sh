@@ -159,7 +159,8 @@ auto() {
     configure_os
     echo "> Configure DE"
     configure_de
-    logout
+    # logout
+    bash /usr/local/bin/connect-domain.sh
     touch "$FLAG_FILE"
     rm -rf "$HOME/.config/autostart/postinstall.desktop"
 }  
