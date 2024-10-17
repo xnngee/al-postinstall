@@ -1,5 +1,5 @@
 #!/bin/bash
-#title              : AstraLinux 1.8 PostInstall
+#title              : AstraLinux 1.8 PostInstall Sys
 #description        : Automation script after setup
 #author             : xenongee
 #date               : 10.2024
@@ -96,63 +96,17 @@ end
 EOF
     sudo chsh -s /usr/bin/fish
 
-    sudo timedatectl set-ntp true
-    sudo systemctl start systemd-timesyncd
-
     #/usr/libexec/vino-server
     gsettings set org.gnome.Vino notify-on-connect false
     gsettings set org.gnome.Vino icon-visibility never
     sudo gsettings set org.gnome.Vino notify-on-connect false
     sudo gsettings set org.gnome.Vino icon-visibility never
     /usr/lib/vino/vino-server &
+
+    sudo curl https://aviakat.ru/images/avi_optimized.jpg --output /usr/share/wallpapers/avi.jpg
 }
 
 configure_de() {
-    # git clone https://github.com/xnngee/al-postinstall.git
-    # cp $HOME/al-postinstall/fly-settings.tgz $HOME/fly-settings.tgz
-    # tar xfv $HOME/fly-settings.tgz && rm -rf $HOME/fly-settings.tgz
-    sudo curl https://aviakat.ru/images/avi_optimized.jpg --output /usr/share/wallpapers/avi.jpg
-    
-    fly-admin-theme apply-color-scheme /usr/share/color-schemes/AstraProximaAdmin.colors
-
-    sudo fly-wmfunc FLYWM_UPDATE_VAL TaskbarHeight 38
-    sudo fly-wmfunc FLYWM_UPDATE_VAL WallPaper "/usr/share/wallpapers/avi.jpg"
-    sudo fly-wmfunc FLYWM_UPDATE_VAL LogoPixmap "/usr/share/wallpapers/_astra_logo_light.svg"
-
-    sudo fly-wmfunc FLYWM_UPDATE_VAL LockerOnDPMS false
-    sudo fly-wmfunc FLYWM_UPDATE_VAL LockerOnLid false
-    sudo fly-wmfunc FLYWM_UPDATE_VAL LockerOnSleep false
-    sudo fly-wmfunc FLYWM_UPDATE_VAL LockerOnSwitch false
-    sudo fly-wmfunc FLYWM_UPDATE_VAL ScreenSaverDelay 0
-
-    kwriteconfig5 --file "$HOME/.config/powermanagementprofilesrc" --group "AC" --group "DPMSContol" --key idleTime 0
-    kwriteconfig5 --file "$HOME/.config/powermanagementprofilesrc" --group "AC" --group "DimDisplay" --key idleTime 0
-    kwriteconfig5 --file "$HOME/.config/powermanagementprofilesrc" --group "AC" --group "HandleButtonEvents" --key lidAction 0
-    kwriteconfig5 --file "$HOME/.config/powermanagementprofilesrc" --group "AC" --group "HandleButtonEvents" --key triggerLidActionWhenExternalMonitorPresent true
-    qdbus org.kde.Solid.PowerManagement /org/kde/Solid/PowerManagement org.kde.Solid.PowerManagement.refreshStatus
-
-    sudo fly-wmfunc FLYWM_UPDATE_VAL CtrlMenuFont "Inter Display-9:normal"
-    sudo fly-wmfunc FLYWM_UPDATE_VAL DefaultFont "Inter Display-10:normal"
-    sudo fly-wmfunc FLYWM_UPDATE_VAL DialogFont "Inter Display-10:normal"
-    sudo fly-wmfunc FLYWM_UPDATE_VAL IconFont "Inter Display-9:normal"
-    sudo fly-wmfunc FLYWM_UPDATE_VAL StartMenuFont "Inter Display-10:normal"
-    sudo fly-wmfunc FLYWM_UPDATE_VAL TaskbarBoldFont "Inter Display-10:bold"
-    sudo fly-wmfunc FLYWM_UPDATE_VAL TaskbarClockFont "Inter Display-12:normal"
-    sudo fly-wmfunc FLYWM_UPDATE_VAL TaskbarDateFont "Inter Display-9:normal"
-    sudo fly-wmfunc FLYWM_UPDATE_VAL TaskbarFont "Inter Display-10:normal"
-    sudo fly-wmfunc FLYWM_UPDATE_VAL TaskbarLangFont "Inter Display-10:normal"
-    sudo fly-wmfunc FLYWM_UPDATE_VAL TitleFont "Inter Display-10:normal"
-    sudo fly-wmfunc FLYWM_UPDATE_VAL TooltipFont "Inter Display-10:normal"
-    sudo fly-wmfunc FLYWM_UPDATE_VAL CascadeMenuFont "Inter Display-10:normal"
-    sudo fly-wmfunc FLYWM_UPDATE_VAL LockerEnterFont "Inter Display-13:normal"
-    sudo fly-wmfunc FLYWM_UPDATE_VAL LockerInputFont "Inter Display-15:normal"
-    sudo fly-wmfunc FLYWM_UPDATE_VAL LockerMonthDayFont "Inter Display-36:normal"
-    sudo fly-wmfunc FLYWM_UPDATE_VAL LockerMsgFont "Inter Display-15:normal"
-    sudo fly-wmfunc FLYWM_UPDATE_VAL LockerTimeFont "Inter Display-36:normal"
-    sudo fly-wmfunc FLYWM_UPDATE_VAL LockerUsernameFont "Inter Display-13:normal"
-    sudo fly-wmfunc FLYWM_UPDATE_VAL LockerWeekDayFont "Inter Display-11:normal"
-    sudo fly-wmfunc FLYWM_UPDATE_VAL LockerWelcomeFont "Inter Display-14:normal"
-
     # sudo fly-admin-dm
     sudo kwriteconfig5 --file /etc/X11/fly-dm/fly-dmrc --group "X-*-Greeter" --key NumLock On
     sudo kwriteconfig5 --file /etc/X11/fly-dm/fly-modern/settings.ini --group "background" --key path "/usr/share/wallpapers/avi.jpg"
@@ -175,21 +129,20 @@ configure_de() {
     # sudo fly-admin-grub2
     sudo kwriteconfig5 --file /etc/default/grub --group '<default>' --key GRUB_TIMEOUT 0
     sudo update-grub2
-
-    sudo fly-wmfunc FLYWM_NUMLOCK_ON
 }
 
 logout() {
-    sleep 5 && sudo fly-wmfunc FLYWM_LOGOUT
+    sleep 5 && fly-wmfunc FLYWM_LOGOUT
 }
 
 auto() {
     if [ -f "$FLAG_FILE" ]; then
         exit 0
     fi
+    bash /usr/local/bin/postinstall_user.sh
     echo ""
-    echo "> AstraLinux 1.8 PostInstall"
-    echo "> Enter admin password for running this script."
+    echo "> AstraLinux 1.8 PostInstall Sys"
+    echo "> Enter sudo password for running this script."
     echo ""
     echo "> Enable Repos"
     enable_repos
