@@ -152,7 +152,6 @@ configure_de() {
     sudo fly-wmfunc FLYWM_UPDATE_VAL LockerUsernameFont "Inter Display-13:normal"
     sudo fly-wmfunc FLYWM_UPDATE_VAL LockerWeekDayFont "Inter Display-11:normal"
     sudo fly-wmfunc FLYWM_UPDATE_VAL LockerWelcomeFont "Inter Display-14:normal"
-    sudo fly-wmfunc FLYWM_NUMLOCK_ON
 
     # sudo fly-admin-dm
     sudo kwriteconfig5 --file /etc/X11/fly-dm/fly-dmrc --group "X-*-Greeter" --key NumLock On
@@ -175,6 +174,9 @@ configure_de() {
     
     # sudo fly-admin-grub2
     sudo kwriteconfig5 --file /etc/default/grub --group '<default>' --key GRUB_TIMEOUT 0
+    sudo update-grub2
+
+    sudo fly-wmfunc FLYWM_NUMLOCK_ON
 }
 
 logout() {
