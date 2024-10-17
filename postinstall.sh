@@ -27,7 +27,7 @@ manage_apps() {
 }
 
 configure_os() {
-tee ~/.config/fish/config.fish &>/dev/null <<EOF
+tee "$HOME/.config/fish/config.fish" &>/dev/null <<EOF
 if status is-interactive
     ### Functions
     function fishhelp
@@ -102,13 +102,15 @@ EOF
     #/usr/libexec/vino-server
     gsettings set org.gnome.Vino notify-on-connect false
     gsettings set org.gnome.Vino icon-visibility never
+    sudo gsettings set org.gnome.Vino notify-on-connect false
+    sudo gsettings set org.gnome.Vino icon-visibility never
     /usr/lib/vino/vino-server &
 }
 
 configure_de() {
     # git clone https://github.com/xnngee/al-postinstall.git
-    # cp ~/al-postinstall/fly-settings.tgz ~/fly-settings.tgz
-    # tar xfv ~/fly-settings.tgz && rm -rf ~/fly-settings.tgz
+    # cp $HOME/al-postinstall/fly-settings.tgz $HOME/fly-settings.tgz
+    # tar xfv $HOME/fly-settings.tgz && rm -rf $HOME/fly-settings.tgz
     sudo curl https://aviakat.ru/images/avi_optimized.jpg --output /usr/share/wallpapers/avi.jpg
     
     fly-admin-theme apply-color-scheme /usr/share/color-schemes/AstraProximaAdmin.colors
@@ -123,10 +125,10 @@ configure_de() {
     sudo fly-wmfunc FLYWM_UPDATE_VAL LockerOnSwitch false
     sudo fly-wmfunc FLYWM_UPDATE_VAL ScreenSaverDelay 0
 
-    kwriteconfig5 --file ~/.config/powermanagementprofilesrc --group "AC" --group "DPMSContol" --key idleTime 0
-    kwriteconfig5 --file ~/.config/powermanagementprofilesrc --group "AC" --group "DimDisplay" --key idleTime 0
-    kwriteconfig5 --file ~/.config/powermanagementprofilesrc --group "AC" --group "HandleButtonEvents" --key lidAction 0
-    kwriteconfig5 --file ~/.config/powermanagementprofilesrc --group "AC" --group "HandleButtonEvents" --key triggerLidActionWhenExternalMonitorPresent true
+    kwriteconfig5 --file "$HOME/.config/powermanagementprofilesrc" --group "AC" --group "DPMSContol" --key idleTime 0
+    kwriteconfig5 --file "$HOME/.config/powermanagementprofilesrc" --group "AC" --group "DimDisplay" --key idleTime 0
+    kwriteconfig5 --file "$HOME/.config/powermanagementprofilesrc" --group "AC" --group "HandleButtonEvents" --key lidAction 0
+    kwriteconfig5 --file "$HOME/.config/powermanagementprofilesrc" --group "AC" --group "HandleButtonEvents" --key triggerLidActionWhenExternalMonitorPresent true
     qdbus org.kde.Solid.PowerManagement /org/kde/Solid/PowerManagement org.kde.Solid.PowerManagement.refreshStatus
 
     sudo fly-wmfunc FLYWM_UPDATE_VAL CtrlMenuFont "Inter Display-9:normal"
@@ -155,7 +157,7 @@ configure_de() {
     # sudo fly-admin-dm
     sudo kwriteconfig5 --file /etc/X11/fly-dm/fly-dmrc --group "X-*-Greeter" --key NumLock On
     sudo kwriteconfig5 --file /etc/X11/fly-dm/fly-modern/settings.ini --group "background" --key path "/usr/share/wallpapers/avi.jpg"
-    sudo kwriteconfig5 --file /etc/X11/fly-dm/fly-modern/settings.ini --group "background" --group "blur" --key radius "5"
+    sudo kwriteconfig5 --file /etc/X11/fly-dm/fly-modern/settings.ini --group "background" --group "blur" --key radius "7"
     sudo kwriteconfig5 --file /etc/X11/fly-dm/fly-modern/settings.ini --group "background" --group "logo" --key path ""
     sudo kwriteconfig5 --file /etc/X11/fly-dm/fly-modern/settings.ini --group "background" --group "logo" --key enable false
     # sudo kwriteconfig5 --file /etc/X11/fly-dm/fly-dmrc --group "X-*-Core" --key DefaultUser "$USER"
