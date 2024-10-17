@@ -106,7 +106,14 @@ EOF
 
 configure_de() {
     sudo curl https://aviakat.ru/images/avi_optimized.jpg --output /usr/share/wallpapers/avi.jpg
-    
+
+    # sudo cp -rf /etc/skel/ /etc/skel.bak
+    # sudo wget https://github.com/xnngee/al-postinstall/raw/refs/heads/main/fly-settings.tgz -O /tmp/fly-settings.tgz
+    # sudo tar -xvf /tmp/fly-settings.tgz -C /tmp/fly-settings
+    # sudo cp -f /tmp/fly-settings/.config/ /etc/skel
+    # sudo cp -f /tmp/fly-settings/.fly/ /etc/skel
+
+
     # sudo fly-admin-dm
     sudo kwriteconfig5 --file /etc/X11/fly-dm/fly-dmrc --group "X-*-Greeter" --key NumLock On
     sudo kwriteconfig5 --file /etc/X11/fly-dm/fly-modern/settings.ini --group "background" --key path "/usr/share/wallpapers/avi.jpg"
