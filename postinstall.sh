@@ -95,7 +95,6 @@ auto() {
     # logout
     bash /usr/local/bin/connect_domain.sh
     touch "$FLAG_FILE"
-    rm -rf "$HOME/.config/autostart/postinstall.desktop"
 }  
 
 auto
