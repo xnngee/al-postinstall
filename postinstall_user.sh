@@ -80,7 +80,7 @@ EOF
 }
 
 configure_de() {
-    fly-admin-theme apply-color-scheme /usr/share/color-schemes/AstraProximaAdmin.colors
+    fly-admin-theme apply-color-scheme /usr/share/color-schemes/AstraDark.colors
 
     fly-wmfunc FLYWM_UPDATE_VAL TaskbarHeight 38
     fly-wmfunc FLYWM_UPDATE_VAL WallPaper "/usr/share/wallpapers/avi.jpg"
