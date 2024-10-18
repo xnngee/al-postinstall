@@ -22,78 +22,11 @@ EOF
 
 manage_apps() {
     sudo apt remove -y fly-admin-iso fly-admin-usbip fly-admin-format fly-admin-multiseat k3b recoll guvcview
-    sudo apt install -y fish zenity fly-dm-rdp xrdp vino fonts-inter astra-ad-sssd-client
+    sudo apt install -y fish zenity fly-dm-rdp xrdp vino fonts-inter astra-ad-sssd-client yandex-browser-stable firefox
     sudo apt autoremove -y
 }
 
 configure_os() {
-tee "$HOME/.config/fish/config.fish" &>/dev/null <<EOF
-if status is-interactive
-    ### Functions
-    function fishhelp
-        echo "Help for Fish Shell configurations by xenongee"
-        echo "Functions:"
-        echo "  fishhelp                - this help"
-        echo "  fish_greeting           - minimal system info from screenfetch sources (fishfetch)"
-        echo "  last_history_item       - last command from history"
-        
-        echo "Abbrieviations:"
-        echo "  !!          - last command from history"
-        echo "  sd          - command: 'sudo'"
-        echo "  ain         - command: 'apt install'"
-        echo "  arm         - command: 'apt remove'"
-        echo "  aup         - command: 'apt update'"
-        echo "  adup        - command: 'apt update && sudo apt dist-upgrade'"
-        echo "  aclr        - command: 'apt clean && sudo apt autoremove'"
-        echo "  ase         - command: 'apt search'"
-        
-        echo "Aliases:"
-        echo "  ..          - 'cd ..'"
-        echo "  lsa         - 'ls -al'"
-        echo "  fishfetch   - function 'fish_greeting'"
-        echo "  fh          - function 'fishhelp'"
-    end
-
-    function fish_greeting
-        ### Minimal system info from screenfetch sources (fishfetch)
-        echo "\$(set_color yellow)Logged as:  \$(whoami)\$(set_color normal)@\$(set_color yellow)\$(hostname)\$(set_color normal)"
-        echo "\$(set_color yellow)OS:\$(set_color normal)         \$(grep '^NAME=' /etc/os-release | cut -d '"' -f 2)"
-        # echo "OS: \$(lsb_release -si) \$(lsb_release -sr) (\$(lsb_release -sc))"
-        echo "\$(set_color yellow)Kernel:\$(set_color normal)     \$(uname -m) \$(uname -sr)"
-        echo "\$(set_color yellow)CPU:\$(set_color normal)       \$(awk -F':' '/^model name/ {split(\$2, A, " @"); print A[1]; exit}' /proc/cpuinfo) Cores: \$(grep -c '^cpu core' /proc/cpuinfo)"
-        set mem "\$(free -b | awk -F ':' 'NR==2{print \$2}' | awk '{print \$1"-"\$6}')"
-        set memsplit (string split "-" -- \$mem)
-        # https://stackoverflow.com/questions/34188178/how-to-extract-substring-in-fish-shell
-        # set memsplitused (string split "-" -- \$mem)[1]
-        # set memsplittotal (string split "-" -- \$mem)[2]
-        set usedmem "\$(math -s 1 \$(math \$mem) / 1024 / 1024)"
-        set totalmem "\$(math -s 1 \$memsplit[1] / 1024 / 1024)"
-        echo "\$(set_color yellow)RAM:\$(set_color normal)        \$usedmem MiB / \$totalmem MiB"
-        echo "\$(set_color yellow)IP:\$(set_color normal)         \$(hostname -I)'('\$(curl -s 2ip.io)')'"
-        echo "Enter 'fishhelp' or 'fh' for more info"
-    end
-
-    function last_history_item
-        echo \$history[1]
-    end
-
-    ### Abbreviations
-    abbr -a sd sudo
-    abbr -a --position anywhere "!!" --function "last_history_item"
-    abbr -a --position anywhere "ain" "apt install"
-    abbr -a --position anywhere "arm" "apt remove"
-    abbr -a --position anywhere "aup" "apt update"
-    abbr -a --position anywhere "adup" "apt update && sudo apt dist-upgrade"
-    abbr -a --position anywhere "aclr" "apt clean && sudo apt autoremove"
-    abbr -a --position anywhere "ase" "apt search"
-
-    ### Aliases
-    alias ..="cd .."
-    alias lsa="ls -al"
-    alias fishfetch="fish_greeting"
-    alias fh="fishhelp"
-end
-EOF
     sudo chsh -s /usr/bin/fish
 
     #/usr/libexec/vino-server
