@@ -5,9 +5,6 @@
 #date               : 10.2024
 #==============================================================================
 
-mkdir -p "$HOME/.config"
-FLAG_FILE="$HOME/.config/.postinstall_done"
-
 configure_os() {
 tee "$HOME/.config/fish/config.fish" &>/dev/null <<EOF
 if status is-interactive
@@ -128,9 +125,6 @@ configure_de() {
 
 
 auto() {
-    if [ -f "$FLAG_FILE" ]; then
-        exit 0
-    fi
     echo ""
     echo "> AstraLinux 1.8 PostInstall User"
     echo ""
