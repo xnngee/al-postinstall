@@ -38,6 +38,7 @@ configure_os() {
 }
 
 configure_de() {
+    fly-admin-theme apply-color-scheme /usr/share/color-schemes/AstraProximaAdmin.colors
     sudo curl https://aviakat.ru/images/avi_optimized.jpg --output /usr/share/wallpapers/avi.jpg && sleep 1
 
     # sudo cp -rf /etc/skel/ /etc/skel.bak
