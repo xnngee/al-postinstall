@@ -132,8 +132,6 @@ auto() {
     configure_os
     echo "> Configure DE"
     configure_de
-    touch "$FLAG_FILE"
-    rm -rf "$HOME/.config/autostart/postinstall.desktop"
 }  
 
 auto
