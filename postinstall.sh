@@ -80,11 +80,12 @@ auto() {
     if [ -f "$FLAG_FILE" ]; then
         exit 0
     fi
-    bash /usr/local/bin/postinstall_user.sh
     echo ""
     echo "> AstraLinux 1.8 PostInstall Sys"
-    echo "> Enter sudo password for running this script."
     echo ""
+    echo "> Start postinstal for user"
+    bash /usr/local/bin/postinstall_user.sh
+    echo "> Enter sudo password for running this script."
     echo "> Enable Repos"
     enable_repos
     echo "> Manage Apps"
