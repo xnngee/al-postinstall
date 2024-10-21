@@ -39,8 +39,7 @@ configure_os() {
 
 configure_de() {
     fly-admin-theme apply-color-scheme /usr/share/color-schemes/AstraProximaAdmin.colors
-    sudo curl https://aviakat.ru/images/avi_optimized.jpg --output /usr/share/wallpapers/avi.jpg && sleep 1
-
+    sudo curl https://aviakat.ru/images/avi_optimized.jpg --output /usr/share/wallpapers/avi.jpg
     fly-wmfunc FLYWM_UPDATE_VAL WallPaper "/usr/share/wallpapers/avi.jpg"
     fly-wmfunc FLYWM_UPDATE_VAL LogoPixmap "/usr/share/wallpapers/astra_logo_light.svg"
 
@@ -94,7 +93,7 @@ auto() {
 
     CONNECT_DOMAIN="/usr/local/bin/connect_domain.sh"
     if [ -f "$CONNECT_DOMAIN" ]; then
-        bash 
+        bash "$CONNECT_DOMAIN"
     else
         logout
     fi
