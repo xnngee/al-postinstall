@@ -68,6 +68,7 @@ logout() {
 
 auto() {
     if [ -f "$FLAG_FILE" ]; then
+        echo "> Script has been executed before. If you want to run it again, delete the file $HOME/.config/.postinstall_done"
         exit 0
     fi
     echo ""
