@@ -48,7 +48,7 @@ if status is-interactive
         set usedmem "\$(math -s 1 \$(math \$mem) / 1024 / 1024)"
         set totalmem "\$(math -s 1 \$memsplit[1] / 1024 / 1024)"
         echo "\$(set_color yellow)RAM:\$(set_color normal)        \$usedmem MiB / \$totalmem MiB"
-        echo "\$(set_color yellow)IP:\$(set_color normal)         \$(hostname -I)'('\$(curl -s 2ip.io)')'"
+        echo "\$(set_color yellow)IP:\$(set_color normal)         \$(hostname -I)(\$(curl -s 2ip.io))"
         echo "Enter 'fishhelp' or 'fh' for more info"
     end
 
