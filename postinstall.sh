@@ -38,6 +38,8 @@ configure_os() {
 }
 
 configure_de() {
+    # TODO: Disable some desktop files
+
     fly-admin-theme apply-color-scheme /usr/share/color-schemes/AstraProximaAdmin.colors
     sudo curl https://aviakat.ru/images/avi_optimized.jpg --output /usr/share/wallpapers/avi.jpg
     fly-wmfunc FLYWM_UPDATE_VAL WallPaper "/usr/share/wallpapers/avi.jpg"
