@@ -76,7 +76,10 @@ auto() {
     echo ""
     echo "> Start postinstal for user"
     bash /usr/local/bin/postinstall_user.sh
-    if [ $(whoami | grep -oq "aviakat.local") ]; then
+
+    checkDomain=$(whoami | grep -oq "aviakat.local"; echo $?)
+    if [ "$check" -eq 1 ]; then
+        echo "User is not local admin. Exit..."
         exit 0
     fi
     echo "> Enter sudo password for running this script."
