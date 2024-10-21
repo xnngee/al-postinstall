@@ -78,7 +78,7 @@ auto() {
     bash /usr/local/bin/postinstall_user.sh
 
     CHECK_DOMAIN=$(whoami | grep -oq "aviakat.local"; echo $?)
-    if [ "$CHECK_DOMAIN" -eq 1 ]; then
+    if [ "$CHECK_DOMAIN" -eq 0 ]; then
         echo "User is not local admin. Exit..."
         exit 0
     fi
