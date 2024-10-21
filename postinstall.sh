@@ -41,6 +41,9 @@ configure_de() {
     fly-admin-theme apply-color-scheme /usr/share/color-schemes/AstraProximaAdmin.colors
     sudo curl https://aviakat.ru/images/avi_optimized.jpg --output /usr/share/wallpapers/avi.jpg && sleep 1
 
+    fly-wmfunc FLYWM_UPDATE_VAL WallPaper "/usr/share/wallpapers/avi.jpg"
+    fly-wmfunc FLYWM_UPDATE_VAL LogoPixmap "/usr/share/wallpapers/astra_logo_light.svg"
+
     # plan b:
     # sudo cp -rf /etc/skel/ /etc/skel.bak
     # sudo wget https://github.com/xnngee/al-postinstall/raw/refs/heads/main/fly-settings.tgz -O /tmp/fly-settings.tgz
