@@ -76,6 +76,9 @@ auto() {
     echo ""
     echo "> Start postinstal for user"
     bash /usr/local/bin/postinstall_user.sh
+    if [ whoami | grep -oq "aviakat.local" ]; then
+        exit 0
+    fi
     echo "> Enter sudo password for running this script."
     echo "> Enable Repos"
     enable_repos
