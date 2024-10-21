@@ -77,8 +77,8 @@ auto() {
     echo "> Start postinstal for user"
     bash /usr/local/bin/postinstall_user.sh
 
-    checkDomain=$(whoami | grep -oq "aviakat.local"; echo $?)
-    if [ "$check" -eq 1 ]; then
+    CHECK_DOMAIN=$(whoami | grep -oq "aviakat.local"; echo $?)
+    if [ "$CHECK_DOMAIN" -eq 1 ]; then
         echo "User is not local admin. Exit..."
         exit 0
     fi
@@ -91,8 +91,14 @@ auto() {
     configure_os
     echo "> Configure DE"
     configure_de
-    # logout
-    bash /usr/local/bin/connect_domain.sh
+
+    CONNECT_DOMAIN="/usr/local/bin/connect_domain.sh"
+    if [ -f "$CONNECT_DOMAIN" ]; then
+        bash 
+    else
+        logout
+    fi
+    
     touch "$FLAG_FILE"
 }  
 
