@@ -80,6 +80,7 @@ auto() {
     CHECK_DOMAIN=$(whoami | grep -oq "aviakat.local"; echo $?)
     if [ "$CHECK_DOMAIN" -eq 0 ]; then
         echo "User is not local admin. Exit..."
+        touch "$FLAG_FILE"
         exit 0
     fi
     echo "> Enter sudo password for running this script."
