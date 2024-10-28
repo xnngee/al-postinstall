@@ -29,6 +29,9 @@ manage_apps() {
 configure_os() {
     sudo chsh -s /usr/bin/fish
 
+    read -p "Set hostname (example: k1309-01): " hostnamequery
+    sudo hostnamectl hostname $hostnamequery
+
     #/usr/libexec/vino-server
     gsettings set org.gnome.Vino notify-on-connect false
     gsettings set org.gnome.Vino icon-visibility never
