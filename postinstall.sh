@@ -106,6 +106,7 @@ auto() {
     fi
     
     touch "$FLAG_FILE"
+    sudo reboot
 }  
 
 auto
