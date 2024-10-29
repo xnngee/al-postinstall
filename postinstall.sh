@@ -27,8 +27,6 @@ manage_apps() {
 }
 
 configure_os() {
-    sudo chsh -s /usr/bin/fish
-
     read -p "Set hostname (example: k1309-01): " hostnamequery
     sudo hostnamectl hostname $hostnamequery
 
