@@ -32,6 +32,9 @@ configure_os() {
     read -p "Set hostname (example: k1309-01): " hostnamequery
     sudo hostnamectl hostname $hostnamequery
 
+    sudo sed -i '/aviakat.local/d' /etc/hosts
+    echo $(hostname -I | cut -d\  -f1) $(hostname) | sudo tee -a /etc/hosts
+
     #/usr/libexec/vino-server
     gsettings set org.gnome.Vino notify-on-connect false
     gsettings set org.gnome.Vino icon-visibility never
