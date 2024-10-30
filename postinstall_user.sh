@@ -120,7 +120,7 @@ configure_de() {
     # fly-wmfunc FLYWM_UPDATE_VAL LockerWeekDayFont "Inter Display-11:normal"
     # fly-wmfunc FLYWM_UPDATE_VAL LockerWelcomeFont "Inter Display-14:normal"
 
-    # fly-wmfunc FLYWM_NUMLOCK_ON
+    fly-wmfunc FLYWM_NUMLOCK_ON
 }
 
 
