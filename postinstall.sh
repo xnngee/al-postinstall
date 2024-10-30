@@ -101,6 +101,7 @@ auto() {
     echo "> AstraLinux 1.8 PostInstall Sys"
     echo ""
     echo "> Start postinstal for user"
+    touch "$FLAG_FILE"
     bash /usr/local/bin/postinstall_user.sh
 
     CHECK_DOMAIN=$(whoami | grep -oq "aviakat.local"; echo $?)
@@ -126,7 +127,6 @@ auto() {
     #     logout
     # fi
     
-    touch "$FLAG_FILE"
     sudo reboot
 }  
 
