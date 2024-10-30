@@ -112,12 +112,12 @@ auto() {
     echo "> Configure DE"
     configure_de
 
-    CONNECT_DOMAIN="/usr/local/bin/connect_domain.sh"
-    if [ -f "$CONNECT_DOMAIN" ]; then
-        bash "$CONNECT_DOMAIN"
-    else
-        logout
-    fi
+    # CONNECT_DOMAIN="/usr/local/bin/connect_domain.sh"
+    # if [ -f "$CONNECT_DOMAIN" ]; then
+    #     bash "$CONNECT_DOMAIN"
+    # else
+    #     logout
+    # fi
     
     touch "$FLAG_FILE"
     sudo reboot
