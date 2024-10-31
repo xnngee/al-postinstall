@@ -231,7 +231,7 @@ start_user(){
     echo "> Configure OS for $USER"
     configure_os_user
     echo "> Configure DE for $USER"
-    сonfigure_de_user
+    configure_de_user
 }
 
 start_system() {
