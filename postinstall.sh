@@ -18,7 +18,7 @@ deb https://download.astralinux.ru/astra/stable/1.8_x86-64/repository-extended/ 
 #deb https://dl.astralinux.ru/astra/frozen/1.8_x86-64/1.8.1/extended-repository/ 1.8_x86-64 main contrib non-free
 EOF
     sudo apt update
-    sudo apt dist-upgrade
+    sudo apt dist-upgrade -y
 }
 
 manage_apps() {
