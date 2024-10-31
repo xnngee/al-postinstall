@@ -27,6 +27,13 @@ manage_apps() {
     sudo apt autoremove -y
 }
 
+sethostname() {
+    read -p "Set hostname (example: k1309-01): " hostnamequery
+    sudo hostnamectl hostname $hostnamequery
+    sudo sed -i '/aviakat.local/d' /etc/hosts
+    echo $(hostname -I | cut -d\  -f1) $(hostname) | sudo tee -a /etc/hosts
+}
+
 configure_os() {
     read -p "Set hostname (example: k1309-01): " hostnamequery
     sudo hostnamectl hostname $hostnamequery
@@ -35,7 +42,7 @@ configure_os() {
         echo "> Set hostname?"
         read -p "> Enter choice number (y/n): " -r choice
         case $choice in
-            [yY]) sudo sed -i '/aviakat.local/d' /etc/hosts && echo $(hostname -I | cut -d\  -f1) $(hostname) | sudo tee -a /etc/hosts; break;;
+            [yY]) sethostname; break;;
             [nN]) break;;
             *) echo "Invalid choice";;
         esac
