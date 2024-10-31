@@ -214,6 +214,10 @@ sreboot() {
     sudo reboot
 }
 
+update() {
+    sudo wget https://raw.githubusercontent.com/xnngee/al-postinstall/refs/heads/main/postinstall.sh -O /usr/local/bin/postinstall.sh 
+}
+
 auto() {
     if [ -f "$FLAG_FILE" ]; then
         echo "> Script has been executed before. If you want to run it again, delete the file $HOME/.config/.postinstall_done"
@@ -274,6 +278,7 @@ help() {
     echo "    - configure_de_user"
     echo "    - slogout"
     echo "    - sreboot"
+    echo "    - update (this is a script update)"
 }
 
 if [[ -z "$1" ]]; then
