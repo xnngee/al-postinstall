@@ -223,6 +223,10 @@ update() {
 
 start_user(){
     echo "> Start postinstal ($USER)"
+
+    if [ $1 -eq 0 ]; then
+        touch "$FLAG_FILE"
+    fi
     
     echo "> Configure OS for $USER"
     configure_os_user
@@ -247,6 +251,10 @@ start_system() {
     configure_de
 }
 
+rm_done () {
+    rm -rf "$FLAG_FILE"
+}
+
 auto() {
     if [ -f "$FLAG_FILE" ]; then
         echo "> Script has been executed before. If you want to run it again, delete the file $HOME/.config/.postinstall_done"
@@ -255,9 +263,7 @@ auto() {
     
     echo "> AstraLinux 1.8 PostInstall"
 
-    start_user
-    
-    touch "$FLAG_FILE"
+    start_user 0
 
     CHECK_DOMAIN=$(whoami | grep -oq "aviakat.local"; echo $?)
     if [ "$CHECK_DOMAIN" -eq 0 ]; then
