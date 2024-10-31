@@ -224,7 +224,7 @@ update() {
 start_user(){
     echo "> Start postinstal ($USER)"
 
-    if [ $1 -eq 0 ]; then
+    if [[ $1 -eq 0 ]]; then
         touch "$FLAG_FILE"
     fi
     
