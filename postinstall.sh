@@ -28,16 +28,13 @@ manage_apps() {
 }
 
 sethostname() {
-    read -p "Set hostname (example: k1309-01): " hostnamequery
+    read -p "Enter hostname (example: k1309-01): " hostnamequery
     sudo hostnamectl hostname $hostnamequery
     sudo sed -i '/aviakat.local/d' /etc/hosts
     echo $(hostname -I | cut -d\  -f1) $(hostname) | sudo tee -a /etc/hosts
 }
 
 configure_os() {
-    read -p "Set hostname (example: k1309-01): " hostnamequery
-    sudo hostnamectl hostname $hostnamequery
-
     while true; do
         read -p "> Set hostname? (y/n): " -r choice
         case $choice in
