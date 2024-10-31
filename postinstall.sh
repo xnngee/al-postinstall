@@ -225,29 +225,16 @@ update() {
     sudo wget https://raw.githubusercontent.com/xnngee/al-postinstall/refs/heads/main/postinstall.sh -O /usr/local/bin/postinstall.sh 
 }
 
-auto() {
-    if [ -f "$FLAG_FILE" ]; then
-        echo "> Script has been executed before. If you want to run it again, delete the file $HOME/.config/.postinstall_done"
-        exit 0
-    fi
-    
-    echo "> AstraLinux 1.8 PostInstall"
+start_user(){
     echo "> Start postinstal ($USER)"
     
     echo "> Configure OS for $USER"
     configure_os_user
     echo "> Configure DE for $USER"
     сonfigure_de_user
-    
-    touch "$FLAG_FILE"
+}
 
-    CHECK_DOMAIN=$(whoami | grep -oq "aviakat.local"; echo $?)
-    if [ "$CHECK_DOMAIN" -eq 0 ]; then
-        echo "User is not local admin. Exit..."
-        touch "$FLAG_FILE"
-        exit 0
-    fi
-
+start_system() {
     echo "> Start postinstal (system)"
     echo "> Enter sudo password for running this script."
     
@@ -262,6 +249,28 @@ auto() {
     
     echo "> Configure DE"
     configure_de
+}
+
+auto() {
+    if [ -f "$FLAG_FILE" ]; then
+        echo "> Script has been executed before. If you want to run it again, delete the file $HOME/.config/.postinstall_done"
+        exit 0
+    fi
+    
+    echo "> AstraLinux 1.8 PostInstall"
+
+    start_user
+    
+    touch "$FLAG_FILE"
+
+    CHECK_DOMAIN=$(whoami | grep -oq "aviakat.local"; echo $?)
+    if [ "$CHECK_DOMAIN" -eq 0 ]; then
+        echo "User is not local admin. Exit..."
+        touch "$FLAG_FILE"
+        exit 0
+    fi
+
+    start_system
 
     # CONNECT_DOMAIN="/usr/local/bin/connect_domain.sh"
     # if [ -f "$CONNECT_DOMAIN" ]; then
