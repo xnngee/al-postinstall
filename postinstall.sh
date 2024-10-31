@@ -39,8 +39,7 @@ configure_os() {
     sudo hostnamectl hostname $hostnamequery
 
     while true; do
-        echo "> Set hostname?"
-        read -p "> Enter choice number (y/n): " -r choice
+        read -p "> Set hostname? (y/n): " -r choice
         case $choice in
             [yY]) sethostname; break;;
             [nN]) break;;
