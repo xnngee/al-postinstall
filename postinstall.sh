@@ -92,6 +92,8 @@ configure_de() {
 }
 
 configure_os_user() {
+fish &
+sleep 1
 tee "$HOME/.config/fish/config.fish" &>/dev/null <<EOF
 if status is-interactive
     ### Functions
