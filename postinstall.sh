@@ -22,7 +22,10 @@ EOF
 }
 
 manage_apps() {
+    echo ">> Remove unused packages:"
     sudo apt remove -y fly-admin-iso fly-admin-usbip fly-admin-format fly-admin-multiseat k3b recoll guvcview
+
+    echo ">> Install needed packages:"
     sudo apt install -y fish zenity fly-dm-rdp xrdp vino fonts-inter astra-ad-sssd-client ffmpeg gwenview yandex-browser-stable firefox audacious vlc-astra libreoffice-astra okular ark doublecmd-common
     sudo apt autoremove -y
 }
@@ -32,6 +35,16 @@ sethostname() {
     sudo hostnamectl hostname $hostnamequery
     sudo sed -i '/aviakat.local/d' /etc/hosts
     echo $(hostname -I | cut -d\  -f1) $(hostname) | sudo tee -a /etc/hosts
+}
+
+postinstall_autostart() {
+    read -p "Select version (1 - shell script, 2 - desktop file)" QUERY
+    echo "$QUERY" 
+}
+
+postinstall_systemd() {
+    tee "/test" &>/dev/null <<EOF
+EOF
 }
 
 configure_os() {
@@ -290,15 +303,18 @@ help() {
     echo "> AstraLinux 1.8 PostInstall"
     echo "  Commands:"
     echo "    - auto"
+    echo "    - start_system"
     echo "    - enable_repos"
     echo "    - manage_apps"
     echo "    - configure_os"
     echo "    - configure_de"
+    echo "    - start_user"
     echo "    - configure_os_user"
     echo "    - configure_de_user"
     echo "    - slogout"
     echo "    - sreboot"
     echo "    - update (this is a script update)"
+    echo "    - rm_done"
 }
 
 if [[ -z "$1" ]]; then
