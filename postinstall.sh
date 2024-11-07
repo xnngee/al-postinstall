@@ -37,14 +37,77 @@ sethostname() {
     echo $(hostname -I | cut -d\  -f1) $(hostname) | sudo tee -a /etc/hosts
 }
 
-postinstall_autostart() {
-    read -p "Select version (1 - shell script, 2 - desktop file)" QUERY
-    echo "$QUERY" 
+IPprefix_by_netmask() {
+    bits=0
+    for octet in $(echo $1| sed 's/\./ /g'); do
+         binbits=$(echo "obase=2; ibase=10; ${octet}"| bc | sed 's/0//g')
+         let bits+=${#binbits}
+    done
+    echo "${bits}"
 }
 
-postinstall_systemd() {
-    tee "/test" &>/dev/null <<EOF
-EOF
+# based on https://gitflic.ru/project/gabidullin-aleks/espd-astra-linux/
+modify_ip() {
+    IP_TYPE=$(ip route list default | awk '{print $7}')
+    IP_LINK=$(ip route list default | awk '{print $5}')
+    IP_UUID=$(nmcli --get-values UUID,DEVICE connection show | awk -F[":"] '/'${IP_LINK}'/ {print $1}')
+    
+    if [[ ${IP_TYPE} == "dhcp" ]]; then
+        echo ">> Now is DHCP"
+    else
+        echo ">> Now is Static"
+    fi
+    
+    echo "Internet interface: ${IP_LINK}"
+    echo "Internet type: ${IP_TYPE}"
+    
+    read -p "Setup static internet? (y/n): " QUERY
+    if [[ ${QUERY} == "y" ]]; then
+        # echo "Введите статический ip-address:"
+        # read IPADDRES
+        read -p "Enter static IP address (192.168.XXX.XXX): " IPADDRES
+    
+        # echo "Введите маску подсети:"
+        # read MASK
+        MASK="255.255.0.0"
+    
+        # echo "Введите gateway (криптошлюз):"
+        # read GATEWAY
+        GATEWAY="192.168.1.1"
+    
+        # echo "Введите ip-address ДНС:"
+        # read DNS
+        DNS="192.168.9.1,192.168.9.2"
+    
+        # Assuming IPprefix_by_netmask is a function you have elsewhere
+        MASK=$(IPprefix_by_netmask ${MASK})
+    
+        #echo "ip $IPADDRES mask $MASK gateway $GATEWAY dns $DNS"
+        #echo "${IP_UUID} ipv4.method manual ipv4.address "${IPADDRES}/${MASK}" ipv4.gateway ${GATEWAY} ipv4.dns ${DNS}"
+    
+        echo ">> IP..."
+        nmcli connection modify ${IP_UUID} ipv4.address "${IPADDRES}/${MASK}"
+        nmcli conn modify ${IP_UUID} ipv4.method manual
+        echo ">> Gateway..."
+        nmcli connection modify ${IP_UUID} ipv4.gateway ${GATEWAY}
+        echo ">> DNS..."
+        nmcli connection modify ${IP_UUID} ipv4.dns ${DNS}
+        #nmcli conn modify ${IP_UUID} ipv4.method manual ipv4.address "${IPADDRES}/${MASK}" ipv4.gateway ${GATEWAY} ipv4.dns ${DNS}
+        nmcli connection down ${IP_UUID}
+        nmcli connection up ${IP_UUID}
+        # sudo reboot
+    else
+        read -p "Setup DHCP internet? (y/n): " QUERY
+        if [[ ${QUERY} == "y" ]]; then
+            nmcli connection modify ${IP_UUID} ipv4.address ""
+            nmcli connection modify ${IP_UUID} ipv4.method auto
+            nmcli connection modify ${IP_UUID} ipv4.gateway ""
+            nmcli connection modify ${IP_UUID} ipv4.dns ""
+            nmcli connection down ${IP_UUID}
+            nmcli connection up ${IP_UUID}
+            # sudo reboot
+        fi
+    fi
 }
 
 configure_os() {
@@ -105,9 +168,9 @@ configure_de() {
 }
 
 configure_os_user() {
-fish &
-sleep 1
-tee "$HOME/.config/fish/config.fish" &>/dev/null <<EOF
+	fish &
+	sleep 1
+	tee "$HOME/.config/fish/config.fish" &>/dev/null <<EOF
 if status is-interactive
     ### Functions
     function fishhelp
@@ -224,16 +287,104 @@ configure_de_user() {
     fly-wmfunc FLYWM_NUMLOCK_ON
 }
 
-slogout() {
+logout() {
     fly-wmfunc FLYWM_LOGOUT
 }
 
-sreboot() {
+reboot() {
     sudo reboot
 }
 
-update() {
+pinst_upd() {
     sudo wget https://raw.githubusercontent.com/xnngee/al-postinstall/refs/heads/main/postinstall.sh -O /usr/local/bin/postinstall.sh 
+}
+
+pinst_autostart() {
+    read -p "Select version (1 - shell script, 2 - desktop file, 3 - systemd service(best), 4 - clear all)" QUERY
+    case $QUERY in
+        1) 
+            pinst_autostart_script
+            sudo cp -rf '/etc/postinstall-autostart.sh' '/etc/xdg/autostart/postinstall-autostart.sh'
+        ;;
+        2) 
+            pinst_autostart_desktopfile
+        ;;
+        3) 
+            pinst_autostart_systemd
+        ;;
+        4)
+            pinst_autostart_clear
+        ;;
+        *) 
+            echo ''
+        ;;
+    esac
+}
+
+pinst_autostart_clear() {
+    echo ">> Remove old starters"
+    sudo rm -rf /etc/postinstall-autostart.sh &>/dev/null 
+    sudo rm -rf /etc/xdg/autostart/postinstall.sh &>/dev/null # old
+    sudo rm -rf /etc/xdg/autostart/postinstall-autostart.sh &>/dev/null 
+
+    sudo systemctl --user stop postinstall-autostart.service
+    sudo systemctl --user disable postinstall-autostart.service
+    sudo systemctl --user daemon-reload
+
+    sudo systemctl stop postinstall-autostart.service
+    sudo systemctl disable postinstall-autostart.service
+    sudo systemctl daemon-reload
+}
+
+pinst_autostart_script() {
+    tee "/etc/postinstall-autostart.sh" &>/dev/null <<EOF
+#!/bin/bash
+LOG_FILE="\$HOME/.config/.postinstall_log"
+echo "\$(date) - started postinstall (auto)" | tee -a "\$LOG_FILE"
+if [ -f "\$HOME/.config/.postinstall_done" ]; then
+    echo "\$(date) - started postinstall (start_user)" | tee -a "\$LOG_FILE"
+    bash /usr/local/bin/postinstall.sh start_user
+    exit 0
+fi
+bash /usr/local/bin/postinstall.sh
+EOF
+    sudo chmod +x /etc/postinstall-autostart.sh
+}
+
+pinst_autostart_desktopfile() {
+    pinst_autostart_script
+#Exec=bash -c 'echo LOG_FILE="\$HOME/.config/.postinstall_log"; "\$(date) - started postinstall (auto)" | tee -a "\$LOG_FILE"; if [ -f "\$HOME/.config/.postinstall_done" ]; then echo "\$(date) - started postinstall (start_user)" | tee -a "\$LOG_FILE"; bash /usr/local/bin/postinstall.sh start_user; exit 0; fi; xterm -e /usr/local/bin/postinstall.sh'
+    tee "/etc/xdg/autostart/postinstall.desktop" &>/dev/null <<EOF
+[Desktop Entry]
+Name=PostInstall
+Type=Application
+Exec=bash /etc/postinstall-autostart.sh
+Icon=utilities-terminal
+Terminal=false
+Categories=System;
+EOF
+}
+
+pinst_autostart_systemd() {
+    #$HOME/.config/systemd/user/postinstall-autostart.service
+    sudo tee /etc/systemd/system/postinstall-autostart.service > /dev/null <<EOF
+[Unit]
+Description=Postinstall Autostart Script
+After=graphical.target
+
+[Service]
+ExecStart=bash /etc/postinstall-autostart.sh
+Restart=on-failure
+Environment=XDG_RUNTIME_DIR=/run/user/%U
+
+[Install]
+WantedBy=default.target
+EOF
+
+    sudo systemctl daemon-reload
+    sudo systemctl enable postinstall-autostart.service
+    sudo systemctl start postinstall-autostart.service
+    sudo systemctl status postinstall-autostart.service
 }
 
 start_user(){
@@ -245,6 +396,7 @@ start_user(){
     
     echo "> Configure OS for $USER"
     configure_os_user
+    
     echo "> Configure DE for $USER"
     configure_de_user
 }
@@ -303,18 +455,23 @@ help() {
     echo "> AstraLinux 1.8 PostInstall"
     echo "  Commands:"
     echo "    - auto"
-    echo "    - start_system"
-    echo "    - enable_repos"
-    echo "    - manage_apps"
-    echo "    - configure_os"
-    echo "    - configure_de"
-    echo "    - start_user"
-    echo "    - configure_os_user"
-    echo "    - configure_de_user"
-    echo "    - slogout"
-    echo "    - sreboot"
-    echo "    - update (this is a script update)"
+    echo "      - start_user [0 - create flag]"
+    echo "        - configure_os_user"
+    echo "        - configure_de_user"
+    echo "      - start_system"
+    echo "        - enable_repos"
+    echo "        - manage_apps"
+    echo "        - configure_os"
+    echo "        - configure_de"
+	echo ""
+    echo "    - modify_ip"
+    echo "    - espd_proxy"
+    echo "    - espd_proxy_off"
+    echo "    - logout"
+    echo "    - reboot"
     echo "    - rm_done"
+    echo "    - pinst_upd"
+	echo "    - pinst_autostart"
 }
 
 if [[ -z "$1" ]]; then
