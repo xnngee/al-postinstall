@@ -195,8 +195,6 @@ if status is-interactive
         echo "  lsa         - 'ls -al'"
         echo "  fishfetch   - function 'fish_greeting'"
         echo "  fh          - function 'fishhelp'"
-        echo "  allusers    - awk -F: 'allusers_help"
-        echo "  alluserssys - awk -F: 'alluserssys_help"
         echo "  cl          - clear"
         echo "  ipe         - curl 2ip.io"
         echo "  halt        - sudo /sbin/halt"
@@ -243,8 +241,6 @@ if status is-interactive
     alias lsa="ls -al"
     alias fishfetch="fish_greeting"
     alias fh="fishhelp"
-    alias allusers=allusers_cmd
-    alias alluserssys=alluserssys_cmd
     alias cl="clear"
     alias ipe="curl 2ip.io"
     alias halt="sudo /sbin/halt"
@@ -253,11 +249,6 @@ if status is-interactive
     alias shutdown="sudo /sbin/shutdown"
 end
 EOF
-
-    sed -i 's/allusers_help/"awk -F: \"(\\$3>=1000)&&(\$1!=\"nobody\"){print \\$1}\" /etc/passwd"/g' "$HOME/.config/fish/config.fish"
-    sed -i 's/alluserssys_help/"awk -F: \"(\\$3<1000){print \\$1}\" /etc/passwd"/g' "$HOME/.config/fish/config.fish"
-    sed -i 's/allusers_cmd/"awk -F: \"(\\$3>=1000)&&(\$1!=\"nobody\"){print \\$1}\" /etc/passwd"/g' "$HOME/.config/fish/config.fish"
-    sed -i 's/alluserssys_cmd/"awk -F: \"(\\$3<1000){print \\$1}\" /etc/passwd"/g' "$HOME/.config/fish/config.fish"
 
     gsettings set org.gnome.Vino notify-on-connect false
     gsettings set org.gnome.Vino icon-visibility never
@@ -318,6 +309,20 @@ reboot() {
 
 pinst_upd() {
     sudo rm -rf /usr/local/bin/postinstall_user.sh # remove old script
+
+    sudo tee "/usr/local/bin/usrs" &>/dev/null <<EOF
+#!/bin/bash
+if [[ $1 -eq "--help" ]]
+    echo "this script lists users (uid >= 1000)\n    --sys - lists system users (uid < 1000)"
+    exit 0
+fi
+if [[ $1 -eq "--sys" ]]
+    awk -F: '(\$3<1000){print \$1}' /etc/passwd
+    exit 0
+fi
+    awk -F: '(\$3>=1000)&&(\$1!="nobody"){print \$1}' /etc/passwd
+EOF
+    
     echo ">> update postinstall_download.su"
     sudo tee "/usr/local/bin/postinstall_download.sh" &>/dev/null <<EOF
 #!/bin/bash
