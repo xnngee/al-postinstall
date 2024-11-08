@@ -322,6 +322,7 @@ if [[ $1 -eq "--sys" ]]
 fi
     awk -F: '(\$3>=1000)&&(\$1!="nobody"){print \$1}' /etc/passwd
 EOF
+    sudo chmod +x /usr/local/bin/usrs
     
     echo ">> update postinstall_download.su"
     sudo tee "/usr/local/bin/postinstall_download.sh" &>/dev/null <<EOF
@@ -497,7 +498,7 @@ help() {
     echo "        - manage_apps"
     echo "        - configure_os"
     echo "        - configure_de"
-	echo ""
+    echo " "
     echo "    - modify_ip"
     echo "    - espd_proxy"
     echo "    - espd_proxy_off"
@@ -505,7 +506,7 @@ help() {
     echo "    - reboot"
     echo "    - rm_done"
     echo "    - pinst_upd"
-	echo "    - pinst_autostart"
+    echo "    - pinst_autostart"
 }
 
 if [[ -z "$1" ]]; then
