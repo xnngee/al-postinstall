@@ -312,11 +312,11 @@ pinst_upd() {
 
     sudo tee "/usr/local/bin/usrs" &>/dev/null <<EOF
 #!/bin/bash
-if [[ $1 -eq "--help" ]]
+if [[ \$1 -eq "--help" ]]
     echo "this script lists users (uid >= 1000)\n    --sys - lists system users (uid < 1000)"
     exit 0
 fi
-if [[ $1 -eq "--sys" ]]
+if [[ \$1 -eq "--sys" ]]
     awk -F: '(\$3<1000){print \$1}' /etc/passwd
     exit 0
 fi
