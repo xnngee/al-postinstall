@@ -296,6 +296,7 @@ reboot() {
 }
 
 pinst_upd() {
+    sudo rm -rf /usr/local/bin/postinstall_user.sh # remove old script
     echo ">> update postinstall_download.su"
     sudo tee "/usr/local/bin/postinstall_download.sh" &>/dev/null <<EOF
 #!/bin/bash
