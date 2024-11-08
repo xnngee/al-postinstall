@@ -195,14 +195,14 @@ if status is-interactive
         echo "  lsa         - 'ls -al'"
         echo "  fishfetch   - function 'fish_greeting'"
         echo "  fh          - function 'fishhelp'"
-	    echo "  alluserssys - awk -F: '(\\$3<1000){print \\$1}' /etc/passwd"
- 	    echo "  allusers    - awk -F: '(\\$3>=1000)&&(\\$1!=\"nobody\"){print \\$1}' /etc/passwd"
- 	    echo "  cl       - clear"
- 	    echo "  ipe      - curl 2ip.io"
- 	    echo "  halt     - sudo /sbin/halt"
- 	    echo "  reboot   - sudo /sbin/reboot"
- 	    echo "  poweroff - sudo /sbin/poweroff"
- 	    echo "  shutdown - sudo /sbin/shutdown"
+        echo "  allusers    - awk -F: 'allusers_help"
+        echo "  alluserssys - awk -F: 'alluserssys_help"
+        echo "  cl          - clear"
+        echo "  ipe         - curl 2ip.io"
+        echo "  halt        - sudo /sbin/halt"
+        echo "  reboot      - sudo /sbin/reboot"
+        echo "  poweroff    - sudo /sbin/poweroff"
+        echo "  shutdown    - sudo /sbin/shutdown"
     end
 
     function fish_greeting
@@ -243,8 +243,8 @@ if status is-interactive
     alias lsa="ls -al"
     alias fishfetch="fish_greeting"
     alias fh="fishhelp"
-    alias alluserssys="awk -F: '(\\$3<1000){print \\$1}' /etc/passwd"
-    alias allusers="awk -F: '(\\$3>=1000)&&(\\$1!=\"nobody\"){print \\$1}' /etc/passwd"
+    alias allusers=allusers_cmd
+    alias alluserssys=alluserssys_cmd
     alias cl="clear"
     alias ipe="curl 2ip.io"
     alias halt="sudo /sbin/halt"
@@ -253,6 +253,11 @@ if status is-interactive
     alias shutdown="sudo /sbin/shutdown"
 end
 EOF
+
+    sed -i 's/allusers_help/"awk -F: \"(\\$3>=1000)&&(\$1!=\"nobody\"){print \\$1}\" /etc/passwd"/g' file.txt
+    sed -i 's/alluserssys_help/"awk -F: \"(\\$3<1000){print \\$1}\" /etc/passwd"/g' file.txt
+    sed -i 's/allusers_cmd/"awk -F: \"(\\$3>=1000)&&(\$1!=\"nobody\"){print \\$1}\" /etc/passwd"/g' file.txt
+    sed -i 's/alluserssys_cmd/"awk -F: \"(\\$3<1000){print \\$1}\" /etc/passwd"/g' file.txt
 
     gsettings set org.gnome.Vino notify-on-connect false
     gsettings set org.gnome.Vino icon-visibility never
