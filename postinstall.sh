@@ -195,6 +195,8 @@ if status is-interactive
         echo "  lsa         - 'ls -al'"
         echo "  fishfetch   - function 'fish_greeting'"
         echo "  fh          - function 'fishhelp'"
+	echo "  alluserssys - awk -F: '($3<1000){print $1}' /etc/passwd"
+ 	echo "  allusers    - awk -F: '($3>=1000)&&($1!="nobody"){print $1}' /etc/passwd"
     end
 
     function fish_greeting
@@ -235,6 +237,8 @@ if status is-interactive
     alias lsa="ls -al"
     alias fishfetch="fish_greeting"
     alias fh="fishhelp"
+    alias alluserssys="awk -F: '($3<1000){print $1}' /etc/passwd"
+    alias allusers="awk -F: '($3>=1000)&&($1!="nobody"){print $1}' /etc/passwd"
 end
 EOF
 
