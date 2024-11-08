@@ -310,17 +310,17 @@ reboot() {
 pinst_upd() {
     sudo rm -rf /usr/local/bin/postinstall_user.sh # remove old script
 
-    sudo tee "/usr/local/bin/usrs" &>/dev/null <<'EOF'
+    sudo tee "/usr/local/bin/usrs" &>/dev/null <<EOF
 #!/bin/bash
-if [[ "$1" == "--help" ]]; then
-    echo -e "This script lists users (uid >= 1000)\n    --sys - lists system users (uid < 1000)"
+if [[ "\\$1" == "--help" ]]; then
+    echo -e "This script lists users (uid >= 1000)\\n    --sys - lists system users (uid < 1000)"
     exit 0
 fi
-if [[ "$1" == "--sys" ]]; then
-    awk -F: '($3<1000){print $1}' /etc/passwd
+if [[ "\\$1" == "--sys" ]]; then
+    awk -F: '(\\$3<1000){print \\$1}' /etc/passwd
     exit 0
 fi
-    awk -F: '($3>=1000)&&($1!="nobody"){print $1}' /etc/passwd
+    awk -F: '(\\$3>=1000)&&(\\$1!="nobody"){print \\$1}' /etc/passwd
 EOF
     sudo chmod +x /usr/local/bin/usrs
     
