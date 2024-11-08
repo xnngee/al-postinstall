@@ -195,8 +195,14 @@ if status is-interactive
         echo "  lsa         - 'ls -al'"
         echo "  fishfetch   - function 'fish_greeting'"
         echo "  fh          - function 'fishhelp'"
-	echo "  alluserssys - awk -F: '($3<1000){print $1}' /etc/passwd"
- 	echo "  allusers    - awk -F: '($3>=1000)&&($1!="nobody"){print $1}' /etc/passwd"
+	    echo "  alluserssys - awk -F: '($3<1000){print $1}' /etc/passwd"
+ 	    echo "  allusers    - awk -F: '($3>=1000)&&($1!="nobody"){print $1}' /etc/passwd"
+ 	    echo "  cl       - clear"
+ 	    echo "  ipe      - curl 2ip.io"
+ 	    echo "  halt     - sudo /sbin/halt"
+ 	    echo "  reboot   - sudo /sbin/reboot"
+ 	    echo "  poweroff - sudo /sbin/poweroff"
+ 	    echo "  shutdown - sudo /sbin/shutdown"
     end
 
     function fish_greeting
@@ -239,6 +245,12 @@ if status is-interactive
     alias fh="fishhelp"
     alias alluserssys="awk -F: '($3<1000){print $1}' /etc/passwd"
     alias allusers="awk -F: '($3>=1000)&&($1!="nobody"){print $1}' /etc/passwd"
+    alias cl="clear"
+    alias ipe="curl 2ip.io"
+    alias halt="sudo /sbin/halt"
+    alias reboot="sudo /sbin/reboot"
+    alias poweroff="sudo /sbin/poweroff"
+    alias shutdown="sudo /sbin/shutdown"
 end
 EOF
 
