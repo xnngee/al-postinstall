@@ -254,10 +254,10 @@ if status is-interactive
 end
 EOF
 
-    sed -i 's/allusers_help/"awk -F: \"(\\$3>=1000)&&(\$1!=\"nobody\"){print \\$1}\" /etc/passwd"/g' file.txt
-    sed -i 's/alluserssys_help/"awk -F: \"(\\$3<1000){print \\$1}\" /etc/passwd"/g' file.txt
-    sed -i 's/allusers_cmd/"awk -F: \"(\\$3>=1000)&&(\$1!=\"nobody\"){print \\$1}\" /etc/passwd"/g' file.txt
-    sed -i 's/alluserssys_cmd/"awk -F: \"(\\$3<1000){print \\$1}\" /etc/passwd"/g' file.txt
+    sed -i 's/allusers_help/"awk -F: \"(\\$3>=1000)&&(\$1!=\"nobody\"){print \\$1}\" /etc/passwd"/g' "$HOME/.config/fish/config.fish"
+    sed -i 's/alluserssys_help/"awk -F: \"(\\$3<1000){print \\$1}\" /etc/passwd"/g' "$HOME/.config/fish/config.fish"
+    sed -i 's/allusers_cmd/"awk -F: \"(\\$3>=1000)&&(\$1!=\"nobody\"){print \\$1}\" /etc/passwd"/g' "$HOME/.config/fish/config.fish"
+    sed -i 's/alluserssys_cmd/"awk -F: \"(\\$3<1000){print \\$1}\" /etc/passwd"/g' "$HOME/.config/fish/config.fish"
 
     gsettings set org.gnome.Vino notify-on-connect false
     gsettings set org.gnome.Vino icon-visibility never
