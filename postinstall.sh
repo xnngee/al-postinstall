@@ -308,7 +308,7 @@ EOF
 }
 
 pinst_autostart() {
-    read -p "Select version (1 - shell script, 2 - desktop file, 3 - systemd service(best), 4 - clear all)" QUERY
+    read -p "Select version (1 - shell script, 2 - desktop file, 3 - systemd service, 4 - clear all)" QUERY
     case $QUERY in
         1) 
             pinst_autostart_script
@@ -335,13 +335,9 @@ pinst_autostart_clear() {
     sudo rm -rf /etc/xdg/autostart/postinstall.sh &>/dev/null # old
     sudo rm -rf /etc/xdg/autostart/postinstall-autostart.sh &>/dev/null 
 
-    sudo systemctl --user stop postinstall-autostart.service
-    sudo systemctl --user disable postinstall-autostart.service
-    sudo systemctl --user daemon-reload
-
-    sudo systemctl stop postinstall-autostart.service
-    sudo systemctl disable postinstall-autostart.service
-    sudo systemctl daemon-reload
+    systemctl --user stop postinstall-autostart.service
+    systemctl --user disable postinstall-autostart.service
+    systemctl --user daemon-reload
 }
 
 pinst_autostart_script() {
@@ -374,25 +370,28 @@ EOF
 }
 
 pinst_autostart_systemd() {
-    #$HOME/.config/systemd/user/postinstall-autostart.service
-    sudo tee /etc/systemd/system/postinstall-autostart.service > /dev/null <<EOF
+    # /etc/systemd/system/postinstall-autostart.service
+    # $HOME/.config/systemd/user/postinstall-autostart.service
+    pinst_autostart_script
+    mkdir -p $HOME/.config/systemd/user/
+    sudo $HOME/.config/systemd/user/postinstall-autostart.service > /dev/null <<EOF
 [Unit]
 Description=Postinstall Autostart Script
 After=graphical.target
 
 [Service]
 ExecStart=bash /etc/postinstall-autostart.sh
-Restart=on-failure
+Restart=oneshot
 Environment=XDG_RUNTIME_DIR=/run/user/%U
 
 [Install]
 WantedBy=default.target
 EOF
 
-    sudo systemctl daemon-reload
-    sudo systemctl enable postinstall-autostart.service
-    sudo systemctl start postinstall-autostart.service
-    sudo systemctl status postinstall-autostart.service
+    systemctl --user daemon-reload
+    systemctl enable --user postinstall-autostart.service
+    systemctl start --user postinstall-autostart.service
+    systemctl status --user postinstall-autostart.service
 }
 
 start_user(){
