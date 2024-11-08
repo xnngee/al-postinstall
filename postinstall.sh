@@ -309,7 +309,7 @@ EOF
 }
 
 pinst_autostart() {
-    read -p "Select version (1 - shell script, 2 - desktop file, 3 - systemd service, 4 - clear all)" QUERY
+    read -p "Select version (1 - shell script, 2 - desktop file, 3 - systemd service, 4 - clear all): " QUERY
     case $QUERY in
         1) 
             pinst_autostart_script
