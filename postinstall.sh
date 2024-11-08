@@ -296,12 +296,15 @@ reboot() {
 }
 
 pinst_upd() {
+    echo ">> update postinstall_download.su"
     sudo tee "/usr/local/bin/postinstall_download.sh" &>/dev/null <<EOF
 #!/bin/bash
 sudo wget https://raw.githubusercontent.com/xnngee/al-postinstall/refs/heads/main/postinstall.sh -O /usr/local/bin/postinstall.sh 
 chmod +x /usr/local/bin/postinstall.sh
+exit 0
 EOF
-    sudo bash /usr/local/bin/postinstall_download.sh
+    echo ">> run postinstall_download.su"
+    sudo bash /usr/local/bin/postinstall_download.sh && exit 0
 }
 
 pinst_autostart() {
