@@ -296,7 +296,7 @@ reboot() {
 }
 
 pinst_upd() {
-	tee "/usr/local/bin/postinstall_download.sh" &>/dev/null <<EOF
+    sudo tee "/usr/local/bin/postinstall_download.sh" &>/dev/null <<EOF
 #!/bin/bash
 sudo wget https://raw.githubusercontent.com/xnngee/al-postinstall/refs/heads/main/postinstall.sh -O /usr/local/bin/postinstall.sh 
 chmod +x /usr/local/bin/postinstall.sh
