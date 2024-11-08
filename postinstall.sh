@@ -342,7 +342,7 @@ pinst_autostart_clear() {
 }
 
 pinst_autostart_script() {
-    tee "/etc/postinstall-autostart.sh" &>/dev/null <<EOF
+    sudo tee "/etc/postinstall-autostart.sh" &>/dev/null <<EOF
 #!/bin/bash
 LOG_FILE="\$HOME/.config/.postinstall_log"
 echo "\$(date) - started postinstall (auto)" | tee -a "\$LOG_FILE"
@@ -359,7 +359,7 @@ EOF
 pinst_autostart_desktopfile() {
     pinst_autostart_script
 #Exec=bash -c 'echo LOG_FILE="\$HOME/.config/.postinstall_log"; "\$(date) - started postinstall (auto)" | tee -a "\$LOG_FILE"; if [ -f "\$HOME/.config/.postinstall_done" ]; then echo "\$(date) - started postinstall (start_user)" | tee -a "\$LOG_FILE"; bash /usr/local/bin/postinstall.sh start_user; exit 0; fi; xterm -e /usr/local/bin/postinstall.sh'
-    tee "/etc/xdg/autostart/postinstall.desktop" &>/dev/null <<EOF
+    sudo tee "/etc/xdg/autostart/postinstall.desktop" &>/dev/null <<EOF
 [Desktop Entry]
 Name=PostInstall
 Type=Application
