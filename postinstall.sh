@@ -372,12 +372,12 @@ pinst_autostart_script() {
     sudo tee "/etc/postinstall-autostart.sh" &>/dev/null <<EOF
 #!/bin/bash
 LOG_FILE="\$HOME/.config/.postinstall_log"
-echo "\$(date) - started postinstall (auto)" | tee -a "\$LOG_FILE"
 if [ -f "\$HOME/.config/.postinstall_done" ]; then
     echo "\$(date) - started postinstall (start_user)" | tee -a "\$LOG_FILE"
     bash /usr/local/bin/postinstall.sh start_user
     exit 0
 fi
+echo "\$(date) - started postinstall (auto)" | tee -a "\$LOG_FILE"
 bash /usr/local/bin/postinstall.sh
 EOF
     sudo chmod +x /etc/postinstall-autostart.sh
