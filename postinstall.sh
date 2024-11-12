@@ -357,6 +357,11 @@ pinst_autostart() {
     esac
 }
 
+pinst_autostartfast() {
+    pinst_autostart_clear
+    pinst_autostart_desktopfile
+}
+
 pinst_autostart_clear() {
     echo ">> Remove old starters"
     sudo rm -rf /etc/postinstall-autostart.sh &>/dev/null 
