@@ -183,7 +183,8 @@ if status is-interactive
         echo "Abbrieviations:"
         echo "  !!          - last command from history"
         echo "  sd          - command: 'sudo'"
-	echo "  sr          - command: 'su-to-root -p adminl -X -c' [run as adminl in user acc]"
+	echo "  fsu         - command: 'fly-su -u adminl -t -c' [run as adminl in user acc]"
+        echo "  fsux        - command: 'fly-su -u adminl -c' [run as adminl in user acc with X11]"
         echo "  ain         - command: 'apt install'"
         echo "  arm         - command: 'apt remove'"
         echo "  aup         - command: 'apt update'"
@@ -229,7 +230,8 @@ if status is-interactive
 
     ### Abbreviations
     abbr -a sd sudo
-    abbr -a sr "su-to-root -p adminl -X -c"
+    abbr -a fsu "fly-su -u adminl -t -c"
+    abbr -a fsux "fly-su -u adminl -c"
     abbr -a --position anywhere "!!" --function "last_history_item"
     abbr -a --position anywhere "ain" "apt install"
     abbr -a --position anywhere "arm" "apt remove"
