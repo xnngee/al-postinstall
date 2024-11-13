@@ -26,7 +26,8 @@ manage_apps() {
     sudo apt remove -y fly-admin-iso fly-admin-usbip fly-admin-format fly-admin-multiseat k3b recoll guvcview
 
     echo ">> Install needed packages:"
-    sudo apt install -y fish zenity fly-dm-rdp xrdp vino fonts-inter astra-ad-sssd-client ffmpeg gwenview yandex-browser-stable firefox audacious vlc-astra libreoffice-astra okular ark doublecmd-common
+    # vino -> x11vnc
+    sudo apt install -y fish zenity fly-dm-rdp xrdp x11vnc fonts-inter astra-ad-sssd-client ffmpeg gwenview yandex-browser-stable firefox audacious vlc-astra libreoffice-astra okular ark doublecmd-common
     sudo apt autoremove -y
 }
 
@@ -165,6 +166,24 @@ configure_de() {
     # sudo fly-admin-grub2
     sudo kwriteconfig5 --file /etc/default/grub --group '<default>' --key GRUB_TIMEOUT 0
     sudo update-grub2
+
+    # https://kasatkin.org/doku.php?id=faq:linux:ubuntu:vnc
+    read -p ">> Enter VNC password: " QUERY
+    sudo x11vnc -storepasswd "$QUERY" /etc/passwd.vnc
+    tee "$HOME/.config/fish/config.fish" &>/dev/null <<EOF
+[Unit]
+Description=Start VNC service
+Requires=display-manager.service
+After=display-manager.service
+[Service]
+Type=simple
+Environment=X11VNC_REVERSE_CONNECTION_NO_AUTH=1
+ExecStart=/usr/bin/x11vnc -auth guess -forever -loop -xkb -noxfixes -noxrecord -noxdamage -repeat -shared -dontdisconnect -many -display :0 -rfbport 5900 -rfbauth /etc/passwd.vnc -o /var/log/x11vnc.log
+[Install]
+WantedBy=multi-user.target
+EOF
+    sudo systemctl enable x11vnc
+    sudo systemctl start x11vnc
 }
 
 configure_os_user() {
