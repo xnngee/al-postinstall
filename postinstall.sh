@@ -512,7 +512,7 @@ auto() {
     #     logout
     # fi
 
-    sreboot
+    reboot
 }
 
 help() {
