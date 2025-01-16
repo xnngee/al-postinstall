@@ -497,7 +497,7 @@ help() {
     echo "> AstraLinux 1.8 PostInstall"
     echo "  Commands:"
     echo "    - auto"
-    echo "      - start_user [0 - create flag]"
+    echo "      - start_user                [ 0 - create 'flag' ]"
     echo "        - configure_os_user"
     echo "        - configure_de_user"
     echo "      - start_system"
@@ -506,15 +506,17 @@ help() {
     echo "        - configure_os"
     echo "        - configure_de"
     echo " "
-    echo "    - modify_ip"
-    echo "    - espd_proxy"
-    echo "    - espd_proxy_off"
-    echo "    - logout"
-    echo "    - reboot"
-echo "    - rm_done"
-    echo "    - pinst_upd"
-    echo "    - pinst_autostart"
-    }
+    echo "    - modify_ip                   [ configures host - static IP or DHCP ]"
+    echo "    - espd_proxy                  [ enable espd proxy for vyatka region ]"
+    echo "    - espd_proxy_off              [ disable edpd proxy ]"
+    echo "    - logout                      [ logout a user ]"
+    echo "    - reboot                      [ reboot PC ]"
+    echo "    - pinst_upd                   [ update postinstall scripts ]"
+    echo "    - pinst_autostart             [ repair autostart for postinstal script ]"
+    echo " "
+    echo "  'Flag' is created when the function is first launched and does not allow part of the instruction to be executed during autorun."
+    echo "    - rm_done [remove 'flag']"
+}
 
 if [[ -z "$1" ]]; then
     auto
