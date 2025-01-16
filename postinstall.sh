@@ -238,6 +238,19 @@ if status is-interactive
 end
 EOF
 
+        tee "$HOME/.local/share/konsole/fly-term.profile" &>/dev/null <<EOF
+[Appearance]
+ColorScheme=Linux
+Font=Monospace,12,-1,5,50,0,0,0,0,0
+
+[General]
+Command=/bin/fish
+LocalTabTitleFormat=%#
+Name=Терминал Fly
+Parent=FALLBACK/
+RemoteTabTitleFormat=%#
+EOF
+
         # gsettings set org.gnome.Vino notify-on-connect false
         # gsettings set org.gnome.Vino icon-visibility never
         # /usr/lib/vino/vino-server &
