@@ -518,7 +518,7 @@ help() {
     echo "    - pinst_upd                   update postinstall scripts ]"
     echo "    - pinst_autostart             pinst_autostartfast | repair autostart for postinstal script"
     echo "      - pinst_autostartfast"
-    echo "    - set_hostname                set hostname
+    echo "    - set_hostname                set hostname"
     echo " "
     echo "  'Flag' is created when the function is first launched and does not allow part of the instruction to be executed during autorun."
     echo "    - rm_done                     remove 'flag'"
