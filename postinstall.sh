@@ -450,6 +450,9 @@ start_user(){
 start_system() {
     echo "> Start postinstal (system)"
     echo "> Enter sudo password for running this script."
+
+    sudo ln -s /usr/local/bin/postinstall.sh /usr/local/bin/postinstall
+    sudo ln -s /usr/local/bin/postinstall_download.sh /usr/local/bin/postinstallupd
     
     echo "> Enable Repos"
     enable_repos
