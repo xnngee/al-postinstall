@@ -27,7 +27,7 @@ manage_apps() {
 
     echo ">> Install needed packages:"
     # vino -> x11vnc
-    sudo apt install -y fish zenity fly-dm-rdp xrdp x11vnc fonts-inter astra-ad-sssd-client ffmpeg gwenview yandex-browser-stable firefox audacious vlc-astra libreoffice-astra okular ark doublecmd-common
+    sudo apt install -y fish zenity fly-dm-rdp xrdp x11vnc astra-ad-sssd-client ffmpeg gwenview yandex-browser-stable firefox audacious vlc-astra libreoffice-astra okular ark doublecmd-common
     sudo apt autoremove -y
 }
 
@@ -298,28 +298,6 @@ configure_de_user() {
     kwriteconfig5 --file "$HOME/.config/powermanagementprofilesrc" --group "AC" --group "HandleButtonEvents" --key triggerLidActionWhenExternalMonitorPresent true
     qdbus org.kde.Solid.PowerManagement /org/kde/Solid/PowerManagement org.kde.Solid.PowerManagement.refreshStatus
 
-    # fly-wmfunc FLYWM_UPDATE_VAL CtrlMenuFont "Inter Display-9:normal"
-    # fly-wmfunc FLYWM_UPDATE_VAL DefaultFont "Inter Display-10:normal"
-    # fly-wmfunc FLYWM_UPDATE_VAL DialogFont "Inter Display-10:normal"
-    # fly-wmfunc FLYWM_UPDATE_VAL IconFont "Inter Display-9:normal"
-    # fly-wmfunc FLYWM_UPDATE_VAL StartMenuFont "Inter Display-10:normal"
-    # fly-wmfunc FLYWM_UPDATE_VAL TaskbarBoldFont "Inter Display-10:bold"
-    # fly-wmfunc FLYWM_UPDATE_VAL TaskbarClockFont "Inter Display-12:normal"
-    # fly-wmfunc FLYWM_UPDATE_VAL TaskbarDateFont "Inter Display-9:normal"
-    # fly-wmfunc FLYWM_UPDATE_VAL TaskbarFont "Inter Display-10:normal"
-    # fly-wmfunc FLYWM_UPDATE_VAL TaskbarLangFont "Inter Display-10:normal"
-    # fly-wmfunc FLYWM_UPDATE_VAL TitleFont "Inter Display-10:normal"
-    # fly-wmfunc FLYWM_UPDATE_VAL TooltipFont "Inter Display-10:normal"
-    # fly-wmfunc FLYWM_UPDATE_VAL CascadeMenuFont "Inter Display-10:normal"
-    # fly-wmfunc FLYWM_UPDATE_VAL LockerEnterFont "Inter Display-13:normal"
-    # fly-wmfunc FLYWM_UPDATE_VAL LockerInputFont "Inter Display-15:normal"
-    # fly-wmfunc FLYWM_UPDATE_VAL LockerMonthDayFont "Inter Display-36:normal"
-    # fly-wmfunc FLYWM_UPDATE_VAL LockerMsgFont "Inter Display-15:normal"
-    # fly-wmfunc FLYWM_UPDATE_VAL LockerTimeFont "Inter Display-36:normal"
-    # fly-wmfunc FLYWM_UPDATE_VAL LockerUsernameFont "Inter Display-13:normal"
-    # fly-wmfunc FLYWM_UPDATE_VAL LockerWeekDayFont "Inter Display-11:normal"
-    # fly-wmfunc FLYWM_UPDATE_VAL LockerWelcomeFont "Inter Display-14:normal"
-
     fly-wmfunc FLYWM_NUMLOCK_ON
 }
 
@@ -533,10 +511,10 @@ help() {
     echo "    - espd_proxy_off"
     echo "    - logout"
     echo "    - reboot"
-    echo "    - rm_done"
+echo "    - rm_done"
     echo "    - pinst_upd"
     echo "    - pinst_autostart"
-}
+    }
 
 if [[ -z "$1" ]]; then
     auto
