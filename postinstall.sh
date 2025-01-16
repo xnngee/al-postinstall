@@ -501,7 +501,7 @@ help() {
     echo "> AstraLinux 1.8 PostInstall"
     echo "  Commands:"
     echo "    - auto"
-    echo "      - start_user [ 0 - create 'flag' ]"
+    echo "      - start_user [ 0 - create 'done flag' ]"
     echo "        - configure_os user"
     echo "        - configure_de user"
     echo "      - start_system"
@@ -520,8 +520,8 @@ help() {
     echo "      - pinst_autostartfast"
     echo "    - set_hostname                set hostname"
     echo " "
-    echo "  'Flag' is created when the function is first launched and does not allow part of the instruction to be executed during autorun."
-    echo "    - rm_done                     remove 'flag'"
+    echo "  'Done flag' is created when the function is first launched and does not allow part of the instruction to be executed during autorun."
+    echo "    - rm_done                     remove 'done flag'"
 }
 
 if [[ -z "$1" ]]; then
