@@ -31,7 +31,7 @@ manage_apps() {
     sudo apt autoremove -y
 }
 
-sethostname() {
+set_hostname() {
     read -p "Enter hostname (example: k1309-01): " hostnamequery
     sudo hostnamectl hostname $hostnamequery
     sudo sed -i '/aviakat.local/d' /etc/hosts
@@ -112,26 +112,27 @@ modify_ip() {
 }
 
 configure_os() {
-    while true; do
-        read -p "> Set hostname? (y/n): " -r choice
-        case $choice in
-            [yY]) sethostname; break;;
-            [nN]) break;;
-            *) echo "Invalid choice";;
-        esac
-    done
+    if [[ $1 != "user" ]]; then
+        while true; do
+            read -p "> Set hostname? (y/n): " -r choice
+            case $choice in
+                [yY]) set_hostname; break;;
+                [nN]) break;;
+                *) echo "Invalid choice";;
+            esac
+        done
 
-    # /usr/libexec/vino-server
-    # gsettings set org.gnome.Vino notify-on-connect false
-    # gsettings set org.gnome.Vino icon-visibility never
-    # sudo gsettings set org.gnome.Vino notify-on-connect false
-    # sudo gsettings set org.gnome.Vino icon-visibility never
-    # /usr/lib/vino/vino-server &
+        # /usr/libexec/vino-server
+        # gsettings set org.gnome.Vino notify-on-connect false
+        # gsettings set org.gnome.Vino icon-visibility never
+        # sudo gsettings set org.gnome.Vino notify-on-connect false
+        # sudo gsettings set org.gnome.Vino icon-visibility never
+        # /usr/lib/vino/vino-server &
 
-    # https://kasatkin.org/doku.php?id=faq:linux:ubuntu:vnc
-    read -p ">> Enter VNC password: " QUERY
-    sudo x11vnc -storepasswd "$QUERY" /etc/passwd.vnc
-    tee "/etc/systemd/system/x11vnc.service" &>/dev/null <<EOF
+        # https://kasatkin.org/doku.php?id=faq:linux:ubuntu:vnc
+        read -p ">> Enter VNC password: " QUERY
+        sudo x11vnc -storepasswd "$QUERY" /etc/passwd.vnc
+        tee "/etc/systemd/system/x11vnc.service" &>/dev/null <<EOF
 [Unit]
 Description=Start VNC service
 Requires=display-manager.service
@@ -143,90 +144,20 @@ ExecStart=/usr/bin/x11vnc -auth guess -forever -loop -xkb -noxfixes -noxrecord -
 [Install]
 WantedBy=multi-user.target
 EOF
-    sudo systemctl daemon-reload
-    sudo systemctl enable x11vnc
-    sudo systemctl start x11vnc
-}
+        sudo systemctl daemon-reload
+        sudo systemctl enable x11vnc
+        sudo systemctl start x11vnc
 
-configure_de() {
-    # TODO: Disable some desktop files
-
-    fly-admin-theme apply-color-scheme /usr/share/color-schemes/AstraProximaAdmin.colors
-    sudo curl https://aviakat.ru/images/avi_optimized.jpg --output /usr/share/wallpapers/avi.jpg
-    fly-wmfunc FLYWM_UPDATE_VAL WallPaper "/usr/share/wallpapers/avi.jpg"
-    fly-wmfunc FLYWM_UPDATE_VAL LogoPixmap "/usr/share/wallpapers/astra_logo_light.svg"
-
-    # plan b:
-    # sudo cp -rf /etc/skel/ /etc/skel.bak
-    # sudo wget https://github.com/xnngee/al-postinstall/raw/refs/heads/main/fly-settings.tgz -O /tmp/fly-settings.tgz
-    # sudo tar -xvf /tmp/fly-settings.tgz -C /tmp/fly-settings
-    # sudo cp -f /tmp/fly-settings/.config/ /etc/skel
-    # sudo cp -f /tmp/fly-settings/.fly/ /etc/skel
-
-    # sudo fly-admin-dm
-    sudo kwriteconfig5 --file /etc/X11/fly-dm/fly-modern/settings.ini --group "background" --key path "/usr/share/wallpapers/avi.jpg"
-    sudo kwriteconfig5 --file /etc/X11/fly-dm/fly-modern/settings.ini --group "background" --group "blur" --key radius "7"
-    sudo kwriteconfig5 --file /etc/X11/fly-dm/fly-modern/settings.ini --group "background" --group "logo" --key path ""
-    sudo kwriteconfig5 --file /etc/X11/fly-dm/fly-modern/settings.ini --group "background" --group "logo" --key enable false
-
-    # sudo kwriteconfig5 --file /etc/X11/fly-dm/fly-dmrc --group "X-*-Core" --key DefaultUser "$USER"
-    sudo kwriteconfig5 --file /etc/X11/fly-dm/fly-dmrc --group "X-*-Core" --key FocusPasswd true
-    sudo kwriteconfig5 --file /etc/X11/fly-dm/fly-dmrc --group "X-*-Core" --key PreselectUser Previous
-    # sudo kwriteconfig5 --file /etc/X11/fly-dm/fly-dmrc --group "X-*-Greeter" --key DefaultUser "$USER"
-    sudo kwriteconfig5 --file /etc/X11/fly-dm/fly-dmrc --group "X-*-Greeter" --key FocusPasswd true
-    sudo kwriteconfig5 --file /etc/X11/fly-dm/fly-dmrc --group "X-*-Greeter" --key PreselectUser Previous
-    sudo kwriteconfig5 --file /etc/X11/fly-dm/fly-dmrc --group "X-:*-Greeter" --key FocusPasswd true
-    # sudo kwriteconfig5 --file /etc/X11/fly-dm/fly-dmrc --group "X-:0-Core" --key AutoLoginEnable true
-    # sudo kwriteconfig5 --file /etc/X11/fly-dm/fly-dmrc --group "X-:0-Core" --key AutoLoginUser "$USER"
-    # sudo kwriteconfig5 --file /etc/X11/fly-dm/fly-dmrc --group "X-:0-Greeter" --key DefaultUser "$USER"
-    sudo kwriteconfig5 --file /etc/X11/fly-dm/fly-dmrc --group "X-:0-Greeter" --key FocusPasswd true
-    sudo kwriteconfig5 --file /etc/X11/fly-dm/fly-dmrc --group "X-:0-Greeter" --key PreselectUser Previous
-
-    # sudo fly-admin-grub2
-    sudo kwriteconfig5 --file /etc/default/grub --group '<default>' --key GRUB_TIMEOUT 0
-    sudo update-grub2
-}
-
-configure_os_user() {
-	fish &
-	sleep 1
-	tee "$HOME/.config/fish/config.fish" &>/dev/null <<EOF
+        sed -i "s/#\$nrconf{kernelhints} = -1;/\$nrconf{kernelhints} = -1;/g" /etc/needrestart/needrestart.conf
+    else 
+        fish &
+        sleep 1
+        tee "$HOME/.config/fish/config.fish" &>/dev/null <<EOF
 if status is-interactive
     ### Functions
-    function fishhelp
-        echo "Help for Fish Shell configurations by xenongee"
-        echo "Functions:"
-        echo "  fishhelp                - this help"
-        echo "  fish_greeting           - minimal system info from screenfetch sources (fishfetch)"
-        echo "  last_history_item       - last command from history"
-        
-        echo "Abbrieviations:"
-        echo "  !!          - last command from history"
-        echo "  sd          - command: 'sudo'"
-	echo "  fsu         - command: 'fly-su -u adminl -t -c' [run as adminl in user acc]"
-        echo "  fsux        - command: 'fly-su -u adminl -c' [run as adminl in user acc with X11]"
-        echo "  ain         - command: 'apt install'"
-        echo "  arm         - command: 'apt remove'"
-        echo "  aup         - command: 'apt update'"
-        echo "  adup        - command: 'apt update && sudo apt dist-upgrade'"
-        echo "  aclr        - command: 'apt clean && sudo apt autoremove'"
-        echo "  ase         - command: 'apt search'"
-        
-        echo "Aliases:"
-        echo "  ..          - 'cd ..'"
-        echo "  lsa         - 'ls -al'"
-        echo "  fishfetch   - function 'fish_greeting'"
-        echo "  fh          - function 'fishhelp'"
-        echo "  cl          - clear"
-        echo "  ipe         - curl 2ip.io"
-        echo "  halt        - sudo /sbin/halt"
-        echo "  reboot      - sudo /sbin/reboot"
-        echo "  poweroff    - sudo /sbin/poweroff"
-        echo "  shutdown    - sudo /sbin/shutdown"
-    end
-
     function fish_greeting
         ### Minimal system info from screenfetch sources (fishfetch)
+        echo "This terminal is running Fish shell. If commands fail, try 'bash'. Switch back with 'exit' or 'fish'."
         echo "\$(set_color yellow)Logged as:  \$(whoami)\$(set_color normal)@\$(set_color yellow)\$(hostname)\$(set_color normal)"
         echo "\$(set_color yellow)OS:\$(set_color normal)         \$(grep '^NAME=' /etc/os-release | cut -d '"' -f 2)"
         # echo "OS: \$(lsb_release -si) \$(lsb_release -sr) (\$(lsb_release -sc))"
@@ -248,22 +179,55 @@ if status is-interactive
         echo \$history[1]
     end
 
+    function fishhelp
+        echo "Help for this Fish Shell. Configuration by xenonge"
+        echo "Functions:"
+        echo "  fishhelp                - this help"
+        echo "  fish_greeting           - minimal system info from screenfetch sources (fishfetch)"
+        echo "  last_history_item       - last command from history"
+        
+        echo "Abbrieviations:"
+        echo "  !!              - last command from history"
+        echo "  sd              - command: 'sudo'"
+	    echo "  flyexec         - command: 'fly-su -u adminl -t -c'     [ run as adminl in user account ]"
+        echo "  flyexecg        - command: 'fly-su -u adminl -c'        [ run as adminl in user account with X11 ]"
+        echo "  sain            - command: 'sudo apt install'"
+        echo "  sarm            - command: 'sudo apt remove'"
+        echo "  saup            - command: 'sudo apt update'"
+        echo "  sadup           - command: 'sudo apt update && sudo apt dist-upgrade'"
+        echo "  saclr           - command: 'sudo apt clean && sudo apt autoremove'"
+        echo "  sase            - command: 'sudo apt search'"
+        
+        echo "Aliases:"
+        echo "  ..              - 'cd ..'"
+        echo "  lsa             - 'ls -al'"
+        echo "  fishfetch       - 'function 'fish_greeting'"
+        echo "  fh              - 'function 'fishhelp'"
+        echo "  cl              - 'clear'"
+        echo "  ipe             - 'curl 2ip.io'"
+        echo "  halt            - 'sudo /sbin/halt'"
+        echo "  reboot          - 'sudo /sbin/reboot'"
+        echo "  poweroff        - 'sudo /sbin/poweroff'"
+        echo "  shutdown        - 'sudo /sbin/shutdown'"
+    end
+
     ### Abbreviations
     abbr -a sd sudo
-    abbr -a fsu "fly-su -u adminl -t -c"
-    abbr -a fsux "fly-su -u adminl -c"
+    abbr -a flyexec "fly-su -u adminl -t -c"
+    abbr -a flyexecg "fly-su -u adminl -c"
     abbr -a --position anywhere "!!" --function "last_history_item"
-    abbr -a --position anywhere "ain" "apt install"
-    abbr -a --position anywhere "arm" "apt remove"
-    abbr -a --position anywhere "aup" "apt update"
-    abbr -a --position anywhere "adup" "apt update && sudo apt dist-upgrade"
-    abbr -a --position anywhere "aclr" "apt clean && sudo apt autoremove"
-    abbr -a --position anywhere "ase" "apt search"
+    abbr -a --position anywhere "ain" "sudo apt install"
+    abbr -a --position anywhere "arm" "sudo apt remove"
+    abbr -a --position anywhere "aup" "sudo apt update"
+    abbr -a --position anywhere "adup" "sudo apt update && sudo apt dist-upgrade"
+    abbr -a --position anywhere "aclr" "sudo apt clean && sudo apt autoremove"
+    abbr -a --position anywhere "ase" "sudo apt search"
 
     ### Aliases
     alias ..="cd .."
     alias lsa="ls -al"
     alias fishfetch="fish_greeting"
+    alias ff="fishfetch"
     alias fh="fishhelp"
     alias cl="clear"
     alias ipe="curl 2ip.io"
@@ -274,31 +238,71 @@ if status is-interactive
 end
 EOF
 
-    # gsettings set org.gnome.Vino notify-on-connect false
-    # gsettings set org.gnome.Vino icon-visibility never
-    # /usr/lib/vino/vino-server &
+        # gsettings set org.gnome.Vino notify-on-connect false
+        # gsettings set org.gnome.Vino icon-visibility never
+        # /usr/lib/vino/vino-server &
+    fi
 }
 
-configure_de_user() {
-    fly-admin-theme apply-color-scheme /usr/share/color-schemes/AstraDark.colors
+configure_de() {
+    if [[ $1 != "user" ]]; then
+        # TODO: Disable some desktop files
 
-    fly-wmfunc FLYWM_UPDATE_VAL TaskbarHeight 38
-    fly-wmfunc FLYWM_UPDATE_VAL WallPaper "/usr/share/wallpapers/avi.jpg"
-    fly-wmfunc FLYWM_UPDATE_VAL LogoPixmap "/usr/share/wallpapers/_astra_logo_light.svg"
+        fly-admin-theme apply-color-scheme /usr/share/color-schemes/AstraProximaAdmin.colors
+        sudo curl https://aviakat.ru/images/avi_optimized.jpg --output /usr/share/wallpapers/avi.jpg
+        fly-wmfunc FLYWM_UPDATE_VAL WallPaper "/usr/share/wallpapers/avi.jpg"
+        fly-wmfunc FLYWM_UPDATE_VAL LogoPixmap "/usr/share/wallpapers/astra_logo_light.svg"
 
-    fly-wmfunc FLYWM_UPDATE_VAL LockerOnDPMS false
-    fly-wmfunc FLYWM_UPDATE_VAL LockerOnLid false
-    fly-wmfunc FLYWM_UPDATE_VAL LockerOnSleep false
-    fly-wmfunc FLYWM_UPDATE_VAL LockerOnSwitch false
-    fly-wmfunc FLYWM_UPDATE_VAL ScreenSaverDelay 0
+        # plan b:
+        # sudo cp -rf /etc/skel/ /etc/skel.bak
+        # sudo wget https://github.com/xnngee/al-postinstall/raw/refs/heads/main/fly-settings.tgz -O /tmp/fly-settings.tgz
+        # sudo tar -xvf /tmp/fly-settings.tgz -C /tmp/fly-settings
+        # sudo cp -f /tmp/fly-settings/.config/ /etc/skel
+        # sudo cp -f /tmp/fly-settings/.fly/ /etc/skel
 
-    kwriteconfig5 --file "$HOME/.config/powermanagementprofilesrc" --group "AC" --group "DPMSContol" --key idleTime 0
-    kwriteconfig5 --file "$HOME/.config/powermanagementprofilesrc" --group "AC" --group "DimDisplay" --key idleTime 0
-    kwriteconfig5 --file "$HOME/.config/powermanagementprofilesrc" --group "AC" --group "HandleButtonEvents" --key lidAction 0
-    kwriteconfig5 --file "$HOME/.config/powermanagementprofilesrc" --group "AC" --group "HandleButtonEvents" --key triggerLidActionWhenExternalMonitorPresent true
-    qdbus org.kde.Solid.PowerManagement /org/kde/Solid/PowerManagement org.kde.Solid.PowerManagement.refreshStatus
+        # sudo fly-admin-dm
+        sudo kwriteconfig5 --file /etc/X11/fly-dm/fly-modern/settings.ini --group "background" --key path "/usr/share/wallpapers/avi.jpg"
+        sudo kwriteconfig5 --file /etc/X11/fly-dm/fly-modern/settings.ini --group "background" --group "blur" --key radius "7"
+        sudo kwriteconfig5 --file /etc/X11/fly-dm/fly-modern/settings.ini --group "background" --group "logo" --key path ""
+        sudo kwriteconfig5 --file /etc/X11/fly-dm/fly-modern/settings.ini --group "background" --group "logo" --key enable false
 
-    fly-wmfunc FLYWM_NUMLOCK_ON
+        # sudo kwriteconfig5 --file /etc/X11/fly-dm/fly-dmrc --group "X-*-Core" --key DefaultUser "$USER"
+        sudo kwriteconfig5 --file /etc/X11/fly-dm/fly-dmrc --group "X-*-Core" --key FocusPasswd true
+        sudo kwriteconfig5 --file /etc/X11/fly-dm/fly-dmrc --group "X-*-Core" --key PreselectUser Previous
+        # sudo kwriteconfig5 --file /etc/X11/fly-dm/fly-dmrc --group "X-*-Greeter" --key DefaultUser "$USER"
+        sudo kwriteconfig5 --file /etc/X11/fly-dm/fly-dmrc --group "X-*-Greeter" --key FocusPasswd true
+        sudo kwriteconfig5 --file /etc/X11/fly-dm/fly-dmrc --group "X-*-Greeter" --key PreselectUser Previous
+        sudo kwriteconfig5 --file /etc/X11/fly-dm/fly-dmrc --group "X-:*-Greeter" --key FocusPasswd true
+        # sudo kwriteconfig5 --file /etc/X11/fly-dm/fly-dmrc --group "X-:0-Core" --key AutoLoginEnable true
+        # sudo kwriteconfig5 --file /etc/X11/fly-dm/fly-dmrc --group "X-:0-Core" --key AutoLoginUser "$USER"
+        # sudo kwriteconfig5 --file /etc/X11/fly-dm/fly-dmrc --group "X-:0-Greeter" --key DefaultUser "$USER"
+        sudo kwriteconfig5 --file /etc/X11/fly-dm/fly-dmrc --group "X-:0-Greeter" --key FocusPasswd true
+        sudo kwriteconfig5 --file /etc/X11/fly-dm/fly-dmrc --group "X-:0-Greeter" --key PreselectUser Previous
+
+        # sudo fly-admin-grub2
+        sudo kwriteconfig5 --file /etc/default/grub --group '<default>' --key GRUB_TIMEOUT 0
+        sudo update-grub2
+    else
+        fly-admin-theme apply-color-scheme /usr/share/color-schemes/AstraDark.colors
+
+        fly-wmfunc FLYWM_UPDATE_VAL TaskbarHeight 38
+        fly-wmfunc FLYWM_UPDATE_VAL WallPaper "/usr/share/wallpapers/avi.jpg"
+        fly-wmfunc FLYWM_UPDATE_VAL LogoPixmap "/usr/share/wallpapers/_astra_logo_light.svg"
+
+        fly-wmfunc FLYWM_UPDATE_VAL LockerOnDPMS false
+        fly-wmfunc FLYWM_UPDATE_VAL LockerOnLid false
+        fly-wmfunc FLYWM_UPDATE_VAL LockerOnSleep false
+        fly-wmfunc FLYWM_UPDATE_VAL LockerOnSwitch false
+        fly-wmfunc FLYWM_UPDATE_VAL ScreenSaverDelay 0
+
+        kwriteconfig5 --file "$HOME/.config/powermanagementprofilesrc" --group "AC" --group "DPMSContol" --key idleTime 0
+        kwriteconfig5 --file "$HOME/.config/powermanagementprofilesrc" --group "AC" --group "DimDisplay" --key idleTime 0
+        kwriteconfig5 --file "$HOME/.config/powermanagementprofilesrc" --group "AC" --group "HandleButtonEvents" --key lidAction 0
+        kwriteconfig5 --file "$HOME/.config/powermanagementprofilesrc" --group "AC" --group "HandleButtonEvents" --key triggerLidActionWhenExternalMonitorPresent true
+        qdbus org.kde.Solid.PowerManagement /org/kde/Solid/PowerManagement org.kde.Solid.PowerManagement.refreshStatus
+
+        fly-wmfunc FLYWM_NUMLOCK_ON
+    fi
 }
 
 logout() {
@@ -326,14 +330,14 @@ fi
 EOF
     sudo chmod +x /usr/local/bin/usrs
     
-    echo ">> update postinstall_download.su"
+    echo ">> update postinstall_download.sh"
     sudo tee "/usr/local/bin/postinstall_download.sh" &>/dev/null <<EOF
 #!/bin/bash
 sudo wget https://raw.githubusercontent.com/xnngee/al-postinstall/refs/heads/main/postinstall.sh -O /usr/local/bin/postinstall.sh 
 chmod +x /usr/local/bin/postinstall.sh
 exit 0
 EOF
-    echo ">> run postinstall_download.su"
+    echo ">> run postinstall_download.sh"
     sudo bash /usr/local/bin/postinstall_download.sh && exit 0
 }
 
@@ -437,10 +441,10 @@ start_user(){
     fi
     
     echo "> Configure OS for $USER"
-    configure_os_user
+    configure_os user
     
     echo "> Configure DE for $USER"
-    configure_de_user
+    configure_de user
 }
 
 start_system() {
@@ -497,25 +501,27 @@ help() {
     echo "> AstraLinux 1.8 PostInstall"
     echo "  Commands:"
     echo "    - auto"
-    echo "      - start_user                [ 0 - create 'flag' ]"
-    echo "        - configure_os_user"
-    echo "        - configure_de_user"
+    echo "      - start_user [ 0 - create 'flag' ]"
+    echo "        - configure_os user"
+    echo "        - configure_de user"
     echo "      - start_system"
     echo "        - enable_repos"
     echo "        - manage_apps"
-    echo "        - configure_os"
-    echo "        - configure_de"
+    echo "        - configure_os [ user - execute instructions for user ]"
+    echo "        - configure_de [ user - execute instructions for user ]"
     echo " "
-    echo "    - modify_ip                   [ configures host - static IP or DHCP ]"
-    echo "    - espd_proxy                  [ enable espd proxy for vyatka region ]"
-    echo "    - espd_proxy_off              [ disable edpd proxy ]"
-    echo "    - logout                      [ logout a user ]"
-    echo "    - reboot                      [ reboot PC ]"
-    echo "    - pinst_upd                   [ update postinstall scripts ]"
-    echo "    - pinst_autostart             [ repair autostart for postinstal script ]"
+    echo "    - modify_ip                   configures host - static IP or DHCP"
+    echo "    - espd_proxy                  enable espd proxy for vyatka region"
+    echo "    - espd_proxy_off              disable edpd proxy"
+    echo "    - logout                      logout a user"
+    echo "    - reboot                      reboot PC"
+    echo "    - pinst_upd                   update postinstall scripts ]"
+    echo "    - pinst_autostart             pinst_autostartfast | repair autostart for postinstal script"
+    echo "      - pinst_autostartfast"
+    echo "    - set_hostname                set hostname
     echo " "
     echo "  'Flag' is created when the function is first launched and does not allow part of the instruction to be executed during autorun."
-    echo "    - rm_done [remove 'flag']"
+    echo "    - rm_done                     remove 'flag'"
 }
 
 if [[ -z "$1" ]]; then
