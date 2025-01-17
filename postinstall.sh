@@ -121,35 +121,14 @@ espd_on() {
                     pref('network.proxy.http_port', %s, locked);\n \
                     pref('network.proxy.ssl', '%s', locked);\n \
                     pref('network.proxy.ssl_port', %s, locked);\n"
-        YANDEX_PATTERN="[Desktop Entry]\n \
-                Version=1.0\n \
-                Name=Yandex Browser\n \
-                GenericName=Web Browser\n \
-                GenericName[ru]=Веб-браузер\n \
-                Exec=/usr/bin/yandex-browser-stable --proxy-server=%s:%s %%U\n \
-                StartupNotify=true\n \
-                Terminal=false\n \
-                Icon=yandex-browser\n \
-                Type=Application\n \
-                Categories=Network;WebBrowser;\n \
-                MimeType=application/pdf;application/rdf+xml;application/rss+xml;application/xhtml+xml;application/xhtml_xml;application/xml;image/gif;image/jpeg;image/png;image/webp;text/html;text/xml;x-scheme-handler/http;x-scheme-handler/https;\n \
-                Actions=new-window;new-private-window;\n \
-                [Desktop Action new-window]\n \
-                Name=New Window\n \
-                Name[ru]=Новое окно\n \
-                Exec=/usr/bin/yandex-browser-stable\n \
-                [Desktop Action new-private-window]\n \
-                Name=New Incognito Window\n \
-                Name[ru]=Новое окно в режиме инкогнито\n \
-                Exec=/usr/bin/yandex-browser-stable --incognito\n"
 
         sudo printf "${ENV_PATTERN}" ${ip} ${port} ${ip} ${port} | sed 's/^[[:space:]]*//g' > ${ENV_FILE}
         sudo printf "${KIO_PATTERN}" | sed 's/^[[:space:]]*//g' > ${KIO_FILE}
         sudo printf "${WGET_PATTERN}" ${ip} ${port} ${ip} ${port} ${ip} ${port} | sed 's/^[[:space:]]*//g' > ${WGET_FILE}
         sudo printf "${APT_PATTERN}" ${ip} ${port} ${ip} ${port} | sed 's/^[[:space:]]*//g' > ${APT_FILE}
         sudo printf "${FIREFOX_PATTERN}" ${ip} ${port} ${ip} ${port} | sed 's/^[[:space:]]*//g' > ${FIREFOX_FILE}
-        #find /home/*/Desktop/ -name yandex-browser.desktop -delete
-        # sudo printf "${YANDEX_PATTERN}" ${ip} ${port} | sed 's/^[[:space:]]*//g' > ${YANDEX_FILE}
+        sudo sed -i "s/yandex-browser-stable/yandex-browser-stable --proxy-server=${ip}:${port}/" /usr/share/applications/yandex-browser.desktop
+        sudo sed -i "s/yandex-browser-stable/yandex-browser-stable --proxy-server=${ip}:${port}/" /usr/share/applications/flydesktop/yandex-browser.desktop
 
         install_cert
 
@@ -172,41 +151,13 @@ espd_off(){
         httpsProxy=\n \
         socksProxy=\n"
 
-    YANDEX_PATTERN="[Desktop Entry]\n \
-                Version=1.0\n \
-                Name=Yandex Browser\n \
-                # Only KDE 4 seems to use GenericName, so we reuse the KDE strings.\n \
-                # From Ubuntu's language-pack-kde-XX-base packages, version 9.04-20090413.\n \
-                GenericName=Web Browser\n \
-                GenericName[ru]=Веб-браузер\n \
-                Exec=/usr/bin/yandex-browser-stable %%U\n \
-                StartupNotify=true\n \
-                Terminal=false\n \
-                Icon=yandex-browser\n \
-                Type=Application\n \
-                Categories=Network;WebBrowser;\n \
-                MimeType=application/pdf;application/rdf+xml;application/rss+xml;application/xhtml+xml;application/xhtml_xml;application/xml;image/gif;image/jpeg;image/png;image/webp;text/html;text/xml;x-scheme-handler/http;x-scheme-handler/https;\n \
-                Actions=new-window;new-private-window;\n \
-
-                [Desktop Action new-window]\n \
-                Name=New Window\n \
-                Name[ru]=Новое окно\n \
-                Exec=/usr/bin/yandex-browser-stable\n \
-
-                [Desktop Action new-private-window]\n \
-                Name=New Incognito Window\n \
-                Name[ru]=Новое окно в режиме инкогнито\n \
-                Exec=/usr/bin/yandex-browser-stable --incognito"\n
-
-
-
     sudo /bin/rm -f ${ENV_FILE}
     sudo printf "${KIO_PATTERN}" | sed 's/^[[:space:]]*//g' > ${KIO_FILE}
     sudo /bin/rm -f ${WGET_FILE}
     sudo /bin/rm -f ${APT_FILE}
     sudo /bin/rm -f ${FIREFOX_FILE}
-    # sudo printf "${YANDEX_PATTERN}" | sed 's/^[[:space:]]*//g' > ${YANDEX_FILE}
-    sudo /bin/rm -f ${YANDEX_FILE}
+    sudo sed -i "s/yandex-browser-stable --proxy-server=[^ ]* /yandex-browser-stable /" /usr/share/applications/yandex-browser.desktop
+    sudo sed -i "s/yandex-browser-stable --proxy-server=[^ ]* /yandex-browser-stable /" /usr/share/applications/flydesktop/yandex-browser.desktop
 
     echo ">> Logout"
     fly-wmfunc FLYWM_LOGOUT
