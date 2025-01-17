@@ -203,10 +203,10 @@ esdp_off(){
     sudo /bin/rm -f ${FIREFOX_FILE}
     sudo /bin/rm -f ${APT_FILE}
     sudo /bin/rm -f ${ENV_FILE}
-    sudo /bin/rm -f ${KIO_FILE}
-    sudo /bin/rm -f ${YANDEX_FILE}
-    # sudo printf "${KIO_PATTERN}" | sed 's/^[[:space:]]*//g' > ${KIO_FILE}
+    sudo printf "${KIO_PATTERN}" | sed 's/^[[:space:]]*//g' > ${KIO_FILE}
+    # sudo /bin/rm -f ${KIO_FILE}
     # sudo printf "${YANDEX_PATTERN}" | sed 's/^[[:space:]]*//g' > ${YANDEX_FILE}
+    sudo /bin/rm -f ${YANDEX_FILE}
 
     fly-wmfunc FLYWM_LOGOUT
 }
@@ -700,6 +700,7 @@ help() {
     echo "        - configure_de [ user - execute instructions for user ]"
     echo " "
     echo "    - modify_ip                   configures host - static IP or DHCP"
+    echo "    - install_cert                install Rostelecom CA certificate"
     echo "    - espd_on                     enable espd proxy [ip port]"
     echo "    - espd_off                    disable edpd proxy"
     echo "    - logout                      logout a user"
