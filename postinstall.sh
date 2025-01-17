@@ -7,6 +7,12 @@
 
 mkdir -p "$HOME/.config"
 FLAG_FILE="$HOME/.config/.postinstall_done"
+ENV_FILE="/etc/environment"
+KIO_FILE="/etc/kio_proxy"
+WGET_FILE="/etc/wgetrc"
+APT_FILE="/etc/apt/apt.conf.d/01proxy"
+FIREFOX_FILE="/etc/firefox/syspref.js"
+YANDEX_FILE="/usr/share/applications/flydesktop/yandex-browser.desktop"
 
 enable_repos() {
 sudo tee /etc/apt/sources.list &>/dev/null <<EOF
@@ -27,7 +33,7 @@ manage_apps() {
 
     echo ">> Install needed packages:"
     # vino -> x11vnc
-    sudo apt install -y fish zenity fly-dm-rdp xrdp x11vnc astra-ad-sssd-client ffmpeg gwenview yandex-browser-stable firefox audacious vlc-astra libreoffice-astra okular ark doublecmd-common
+    sudo apt install -y fish zenity fly-dm-rdp xrdp x11vnc astra-ad-sssd-client ffmpeg gwenview yandex-browser-stable firefox audacious vlc-astra libreoffice-astra okular ark doublecmd-common libnss3-tools
     sudo apt autoremove -y
 }
 
@@ -36,6 +42,173 @@ set_hostname() {
     sudo hostnamectl hostname $hostnamequery
     sudo sed -i '/aviakat.local/d' /etc/hosts
     echo $(hostname -I | cut -d\  -f1) $(hostname) | sudo tee -a /etc/hosts
+}
+
+install_cert() {
+    # CERT_URL="https://espd.wifi.rt.ru/docs/ca-root.crt"
+    CERT_PATH="/usr/local/share/ca-certificates/ca-root.crt"
+
+    # echo "Скачивание сертификата..."
+    # sudo wget -O "$CERT_PATH" "$CERT_URL"
+
+    echo ">> Install certificate on storage"
+    #sudo cp -rf /mnt/studyfolder/Общая/Admin/ca-root.crt /usr/local/share/ca-certificates/
+    sudo tee "$CERT_PATH" << EOF
+-----BEGIN CERTIFICATE-----
+MIICwTCCAiKgAwIBAgIJAI3Ml117n/X6MAoGCCqGSM49BAMDMHkxCzAJBgNVBAYT
+AlJVMRwwGgYDVQQIDBM3OCBTYWludCBQZXRlcnNidXJnMQ8wDQYDVQQHDAZNb3Nj
+b3cxGjAYBgNVBAoMEVBKU0MgIlJvc3RlbGVjb20iMR8wHQYDVQQDDBZDQSBSb290
+IFNvY2lhbCBPYmplY3RzMB4XDTE5MTEwNjAxNTA0NVoXDTI5MTEwMzAxNTA0NVow
+eTELMAkGA1UEBhMCUlUxHDAaBgNVBAgMEzc4IFNhaW50IFBldGVyc2J1cmcxDzAN
+BgNVBAcMBk1vc2NvdzEaMBgGA1UECgwRUEpTQyAiUm9zdGVsZWNvbSIxHzAdBgNV
+BAMMFkNBIFJvb3QgU29jaWFsIE9iamVjdHMwgZswEAYHKoZIzj0CAQYFK4EEACMD
+gYYABAEbKxoCuZPpMmAFNIE3Lj/r3zhz3uNwroB2Z3abEKPIxOr034qk2viP6GS6
+dGK7ePO5qgBjBgUY8vYGUjpvqGaD6gD126FAsEa1PxnVo+NW3Uo4iixWORbkh9+e
+JTDv9NtcIV1yG7wsLXVQJ0l9xToTzZTmwJ4T7ToJpSDockatG9cJpKNQME4wHQYD
+VR0OBBYEFLCFD/DFMazmicEPOblGm3izWGxBMB8GA1UdIwQYMBaAFLCFD/DFMazm
+icEPOblGm3izWGxBMAwGA1UdEwQFMAMBAf8wCgYIKoZIzj0EAwMDgYwAMIGIAkIB
+LFq8dnmqvBQl7dM++WmlxDO6Vtnc602VtsRsVfI6wYJdy9o34ajkxr02fFqYsmUh
+N/0HYIUJkbl/3P+/dfle+h8CQgE8MCDOFPnwcOQHtx//aOADv4kv3id7pL32kOIJ
+DFxVlHaSwdEHb9ZD3zbTjlaJdiOEt0fW5bH24psmqK5aYsSOvQ==
+-----END CERTIFICATE-----
+EOF
+
+    echo "Update CA certificates..."
+    sudo update-ca-certificates
+
+    echo "Import certificate with certutil"
+    for p in $(sudo find /home/ -name cert9.db -printf "%h\n" 2>/dev/null); do
+        sudo certutil -A -n "Rostelecom Root CA" -t "C,," -i /usr/local/share/ca-certificates/ca-root.crt -d "sql:$p"
+    done
+}
+
+# https://gitflic.ru/project/gabidullin-aleks/espd-astra-linux
+espd_on() {
+    if [[ -n "$1" && -n "$2" ]]; then
+        ip="$1"
+        port="$2"
+    else
+        read -p "Enter ESPD IP: " ip
+        read -p "Enter ESPD Port: " port
+    fi
+
+    if [[ -n $ip && -n $port ]]; then
+        echo "IP: $ip; PORT: $port"
+
+        ENV_PATTERN="https_proxy=\"https://%s:%s/\"
+                http_proxy=\"http://%s:%s/\"
+                no_proxy=\"127.0.0.1, localhost, 192.168.29.0/24\""
+        KIO_PATTERN="ProxyUrlDisplayFlags=3\n \
+                    [Proxy Settings]\n \
+                    NoProxyFor=no_proxy\n \
+                    Proxy Config Script=\n \
+                    ProxyType=4\n \
+                    ReversedException=false\n \
+                    ftpProxy=\n \
+                    httpProxy=http_proxy\n \
+                    httpsProxy=https_proxy\n \
+                    socksProxy=\n"
+        WGET_PATTERN="http_proxy=%s:%s\n \
+                    https_proxy=%s:%s\n \
+                    ftp_proxy=%s:%s\n \
+                    use_proxy=on\n"
+        APT_PATTERN="Acquire::http::proxy \"http://%s:%s/\";\n \
+                    Acquire::https::proxy \"http://%s:%s/\";\n \
+                    Acquire::::Proxy \"true\";\n"
+        FIREFOX_PATTERN="pref('network.proxy.type', 1, locked);\n \
+                    pref('network.proxy.no_proxies_on', 'localhost', locked);\n \
+                    pref('network.proxy.http', '%s', locked);\n \
+                    pref('network.proxy.http_port', %s, locked);\n \
+                    pref('network.proxy.ssl', '%s', locked);\n \
+                    pref('network.proxy.ssl_port', %s, locked);\n"
+        YANDEX_PATTERN="[Desktop Entry]\n \
+                Version=1.0\n \
+                Name=Yandex Browser\n \
+                GenericName=Web Browser\n \
+                GenericName[ru]=Веб-браузер\n \
+                Exec=/usr/bin/yandex-browser-stable --proxy-server=%s:%s %%U\n \
+                StartupNotify=true\n \
+                Terminal=false\n \
+                Icon=yandex-browser\n \
+                Type=Application\n \
+                Categories=Network;WebBrowser;\n \
+                MimeType=application/pdf;application/rdf+xml;application/rss+xml;application/xhtml+xml;application/xhtml_xml;application/xml;image/gif;image/jpeg;image/png;image/webp;text/html;text/xml;x-scheme-handler/http;x-scheme-handler/https;\n \
+                Actions=new-window;new-private-window;\n \
+                [Desktop Action new-window]\n \
+                Name=New Window\n \
+                Name[ru]=Новое окно\n \
+                Exec=/usr/bin/yandex-browser-stable\n \
+                [Desktop Action new-private-window]\n \
+                Name=New Incognito Window\n \
+                Name[ru]=Новое окно в режиме инкогнито\n \
+                Exec=/usr/bin/yandex-browser-stable --incognito\n"
+
+        sudo printf "${ENV_PATTERN}" ${ip} ${port} ${ip} ${port} | sed 's/^[[:space:]]*//g' > ${ENV_FILE}
+        # sudo printf "${KIO_PATTERN}" | sed 's/^[[:space:]]*//g' > ${KIO_FILE}
+        # sudo printf "${WGET_PATTERN}" ${ip} ${port} ${ip} ${port} ${ip} ${port} | sed 's/^[[:space:]]*//g' > ${WGET_FILE}
+        # sudo printf "${APT_PATTERN}" ${ip} ${port} ${ip} ${port} | sed 's/^[[:space:]]*//g' > ${APT_FILE}
+        # sudo printf "${FIREFOX_PATTERN}" ${ip} ${port} ${ip} ${port} | sed 's/^[[:space:]]*//g' > ${FIREFOX_FILE}
+        #find /home/*/Desktop/ -name yandex-browser.desktop -delete
+        # sudo printf "${YANDEX_PATTERN}" ${ip} ${port} | sed 's/^[[:space:]]*//g' > ${YANDEX_FILE}
+
+        install_cert
+
+        fly-wmfunc FLYWM_LOGOUT
+    else
+        echo "Incorrect, try again."
+    fi
+}
+
+esdp_off(){
+    KIO_PATTERN="ProxyUrlDisplayFlags=3\n \
+        [Proxy Settings]\n \
+        NoProxyFor=\n \
+        Proxy Config Script=\n \
+        ProxyType=0\n \
+        ReversedException=false\n \
+        ftpProxy=\n \
+        httpProxy=\n \
+        httpsProxy=\n \
+        socksProxy=\n"
+
+    YANDEX_PATTERN="[Desktop Entry]\n \
+                Version=1.0\n \
+                Name=Yandex Browser\n \
+                # Only KDE 4 seems to use GenericName, so we reuse the KDE strings.\n \
+                # From Ubuntu's language-pack-kde-XX-base packages, version 9.04-20090413.\n \
+                GenericName=Web Browser\n \
+                GenericName[ru]=Веб-браузер\n \
+                Exec=/usr/bin/yandex-browser-stable %%U\n \
+                StartupNotify=true\n \
+                Terminal=false\n \
+                Icon=yandex-browser\n \
+                Type=Application\n \
+                Categories=Network;WebBrowser;\n \
+                MimeType=application/pdf;application/rdf+xml;application/rss+xml;application/xhtml+xml;application/xhtml_xml;application/xml;image/gif;image/jpeg;image/png;image/webp;text/html;text/xml;x-scheme-handler/http;x-scheme-handler/https;\n \
+                Actions=new-window;new-private-window;\n \
+
+                [Desktop Action new-window]\n \
+                Name=New Window\n \
+                Name[ru]=Новое окно\n \
+                Exec=/usr/bin/yandex-browser-stable\n \
+
+                [Desktop Action new-private-window]\n \
+                Name=New Incognito Window\n \
+                Name[ru]=Новое окно в режиме инкогнито\n \
+                Exec=/usr/bin/yandex-browser-stable --incognito"\n
+
+
+
+    sudo /bin/rm -f ${WGET_FILE}
+    sudo /bin/rm -f ${FIREFOX_FILE}
+    sudo /bin/rm -f ${APT_FILE}
+    sudo /bin/rm -f ${ENV_FILE}
+    sudo /bin/rm -f ${KIO_FILE}
+    sudo /bin/rm -f ${YANDEX_FILE}
+    # sudo printf "${KIO_PATTERN}" | sed 's/^[[:space:]]*//g' > ${KIO_FILE}
+    # sudo printf "${YANDEX_PATTERN}" | sed 's/^[[:space:]]*//g' > ${YANDEX_FILE}
+
+    fly-wmfunc FLYWM_LOGOUT
 }
 
 IPprefix_by_netmask() {
@@ -527,8 +700,8 @@ help() {
     echo "        - configure_de [ user - execute instructions for user ]"
     echo " "
     echo "    - modify_ip                   configures host - static IP or DHCP"
-    echo "    - espd_proxy                  enable espd proxy for vyatka region"
-    echo "    - espd_proxy_off              disable edpd proxy"
+    echo "    - espd_on                     enable espd proxy [ip port]"
+    echo "    - espd_off                    disable edpd proxy"
     echo "    - logout                      logout a user"
     echo "    - reboot                      reboot PC"
     echo "    - pinst_upd                   update postinstall scripts ]"
