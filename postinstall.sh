@@ -139,6 +139,10 @@ espd_on() {
     fi
 }
 
+espd_43(){
+    espd_on 10.0.43.52 3128
+}
+
 espd_off(){
     KIO_PATTERN="ProxyUrlDisplayFlags=3\n \
         [Proxy Settings]\n \
