@@ -159,7 +159,7 @@ espd_on() {
     fi
 }
 
-esdp_off(){
+espd_off(){
     KIO_PATTERN="ProxyUrlDisplayFlags=3\n \
         [Proxy Settings]\n \
         NoProxyFor=\n \
