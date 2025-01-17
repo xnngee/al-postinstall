@@ -144,15 +144,16 @@ espd_on() {
                 Exec=/usr/bin/yandex-browser-stable --incognito\n"
 
         sudo printf "${ENV_PATTERN}" ${ip} ${port} ${ip} ${port} | sed 's/^[[:space:]]*//g' > ${ENV_FILE}
-        # sudo printf "${KIO_PATTERN}" | sed 's/^[[:space:]]*//g' > ${KIO_FILE}
-        # sudo printf "${WGET_PATTERN}" ${ip} ${port} ${ip} ${port} ${ip} ${port} | sed 's/^[[:space:]]*//g' > ${WGET_FILE}
-        # sudo printf "${APT_PATTERN}" ${ip} ${port} ${ip} ${port} | sed 's/^[[:space:]]*//g' > ${APT_FILE}
-        # sudo printf "${FIREFOX_PATTERN}" ${ip} ${port} ${ip} ${port} | sed 's/^[[:space:]]*//g' > ${FIREFOX_FILE}
+        sudo printf "${KIO_PATTERN}" | sed 's/^[[:space:]]*//g' > ${KIO_FILE}
+        sudo printf "${WGET_PATTERN}" ${ip} ${port} ${ip} ${port} ${ip} ${port} | sed 's/^[[:space:]]*//g' > ${WGET_FILE}
+        sudo printf "${APT_PATTERN}" ${ip} ${port} ${ip} ${port} | sed 's/^[[:space:]]*//g' > ${APT_FILE}
+        sudo printf "${FIREFOX_PATTERN}" ${ip} ${port} ${ip} ${port} | sed 's/^[[:space:]]*//g' > ${FIREFOX_FILE}
         #find /home/*/Desktop/ -name yandex-browser.desktop -delete
         # sudo printf "${YANDEX_PATTERN}" ${ip} ${port} | sed 's/^[[:space:]]*//g' > ${YANDEX_FILE}
 
         install_cert
 
+        echo ">> Logout"
         fly-wmfunc FLYWM_LOGOUT
     else
         echo "Incorrect, try again."
@@ -199,15 +200,15 @@ espd_off(){
 
 
 
-    sudo /bin/rm -f ${WGET_FILE}
-    sudo /bin/rm -f ${FIREFOX_FILE}
-    sudo /bin/rm -f ${APT_FILE}
     sudo /bin/rm -f ${ENV_FILE}
     sudo printf "${KIO_PATTERN}" | sed 's/^[[:space:]]*//g' > ${KIO_FILE}
-    # sudo /bin/rm -f ${KIO_FILE}
+    sudo /bin/rm -f ${WGET_FILE}
+    sudo /bin/rm -f ${APT_FILE}
+    sudo /bin/rm -f ${FIREFOX_FILE}
     # sudo printf "${YANDEX_PATTERN}" | sed 's/^[[:space:]]*//g' > ${YANDEX_FILE}
     sudo /bin/rm -f ${YANDEX_FILE}
 
+    echo ">> Logout"
     fly-wmfunc FLYWM_LOGOUT
 }
 
