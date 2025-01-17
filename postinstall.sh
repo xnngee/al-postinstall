@@ -244,7 +244,7 @@ ColorScheme=Linux
 Font=Monospace,12,-1,5,50,0,0,0,0,0
 
 [General]
-Command=/bin/fish
+Command=/bin/bash
 LocalTabTitleFormat=%#
 Name=Терминал Fly
 Parent=FALLBACK/
