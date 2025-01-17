@@ -127,8 +127,11 @@ espd_on() {
         sudo printf "${WGET_PATTERN}" ${ip} ${port} ${ip} ${port} ${ip} ${port} | sed 's/^[[:space:]]*//g' > ${WGET_FILE}
         sudo printf "${APT_PATTERN}" ${ip} ${port} ${ip} ${port} | sed 's/^[[:space:]]*//g' > ${APT_FILE}
         sudo printf "${FIREFOX_PATTERN}" ${ip} ${port} ${ip} ${port} | sed 's/^[[:space:]]*//g' > ${FIREFOX_FILE}
-        sudo sed -i "s/yandex-browser-stable/yandex-browser-stable --proxy-server=${ip}:${port}/" /usr/share/applications/yandex-browser.desktop
-        sudo sed -i "s/yandex-browser-stable/yandex-browser-stable --proxy-server=${ip}:${port}/" /usr/share/applications/flydesktop/yandex-browser.desktop
+        find /usr/share/applications/ /home/ -name "yandex-browser.desktop" -print0 | while IFS= read -r -d $'\0' desktop_file; do
+            if ! grep -q "yandex-browser-stable --proxy-server=${ip}:${port}" "$desktop_file"; then
+                sudo sed -i "s/yandex-browser-stable/yandex-browser-stable --proxy-server=${ip}:${port}/" "$desktop_file"
+            fi
+        done
 
         install_cert
 
@@ -160,8 +163,11 @@ espd_off(){
     sudo /bin/rm -f ${WGET_FILE}
     sudo /bin/rm -f ${APT_FILE}
     sudo /bin/rm -f ${FIREFOX_FILE}
-    sudo sed -i "s/yandex-browser-stable --proxy-server=[^ ]* /yandex-browser-stable /" /usr/share/applications/yandex-browser.desktop
-    sudo sed -i "s/yandex-browser-stable --proxy-server=[^ ]* /yandex-browser-stable /" /usr/share/applications/flydesktop/yandex-browser.desktop
+    find /usr/share/applications/ /home/ -name "yandex-browser.desktop" -print0 | while IFS= read -r -d $'\0' desktop_file; do
+        if grep -q "yandex-browser-stable --proxy-server=[^ ]*" "$desktop_file"; then
+            sudo sed -i "s/yandex-browser-stable --proxy-server=[^ ]*/yandex-browser-stable /" "$desktop_file"
+        fi
+    done
 
     echo ">> Logout"
     fly-wmfunc FLYWM_LOGOUT
