@@ -12,7 +12,6 @@ KIO_FILE="/etc/kio_proxy"
 WGET_FILE="/etc/wgetrc"
 APT_FILE="/etc/apt/apt.conf.d/01proxy"
 FIREFOX_FILE="/etc/firefox/syspref.js"
-YANDEX_FILE="/usr/share/applications/flydesktop/yandex-browser.desktop"
 
 enable_repos() {
 sudo tee /etc/apt/sources.list &>/dev/null <<EOF
